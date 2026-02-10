@@ -1,0 +1,315 @@
+{
+  "user": [
+    {
+      "id": "29dd",
+      "name": "Hisham Ali",
+      "email": "hishamali@gmail.com",
+      "password": "hishamali123",
+      "role": "admin",
+      "isBlock": false,
+      "cart": [],
+      "orders": [],
+      "wishlist": [],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "6721",
+      "name": "Hisham",
+      "email": "hisham@gmail.com",
+      "password": "hisham123",
+      "role": "user",
+      "isBlock": false,
+      "cart": [],
+      "orders": [],
+      "wishlist": [],
+      "blocked": false,
+      "date": "2025-10-14"
+    },
+    {
+      "id": "9573",
+      "name": "John Doe",
+      "email": "johndoe@gmail.com",
+      "password": "johndoe123",
+      "role": "user",
+      "isBlock": false,
+      "cart": [],
+      "orders": [],
+      "wishlist": [],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "7f34",
+      "name": "Jane Doe",
+      "email": "janedoe@gmail.com",
+      "password": "janedoe123",
+      "role": "user",
+      "isBlock": false,
+      "cart": [],
+      "orders": [],
+      "wishlist": [],
+      "date": "2025-10-14"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "category": "men",
+      "type": "Blazers",
+      "name": "Double-Breasted Blazer",
+      "description": "A stylish dark navy double-breasted blazer for formal occasions.",
+      "price": 11950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/c4a3/13cf/e44d4364b836/8478898bb7ea/05893907422-000-e1/05893907422-000-e1.jpg?ts=1753784869546&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "2",
+      "category": "men",
+      "type": "Jackets",
+      "name": "Champion® x Zara Padded Bomber Jacket",
+      "description": "A navy blue padded bomber jacket from the Champion® x Zara collaboration.",
+      "price": 10950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/3390/7f82/bb2b40f3a49e/280b72cc3029/03833999401-e1/03833999401-e1.jpg?ts=1758531600060&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "3",
+      "category": "men",
+      "type": "Jackets",
+      "name": "Leather Jacket Harry Lambert for Zara x Disney",
+      "description": "A dark brown leather jacket featuring Disney designs, created by Harry Lambert.",
+      "price": 23950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/f323/a6d4/01044d4a98e0/9f783832ff52/05127300716-e1/05127300716-e1.jpg?ts=1755766077721&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "4",
+      "category": "men",
+      "type": "Sweatshirts",
+      "name": "Contrast Collar Polo Sweatshirt",
+      "description": "A navy blue sweatshirt with a contrasting collar, combining comfort and style.",
+      "price": 3550,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/5ad9/8f08/72054543a00a/9efa4108509d/00526310401-e1/00526310401-e1.jpg?ts=1754921375225&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "5",
+      "category": "men",
+      "type": "Jeans",
+      "name": "Regular Straight Fit Jeans",
+      "description": "Mid-blue straight-fit jeans offering a classic and comfortable fit.",
+      "price": 2950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/c50e/04de/422140f5af28/eacc12a2a004/08062410427-000-e1/08062410427-000-e1.jpg?ts=1759228799022&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "6",
+      "category": "men",
+      "type": "Footwear",
+      "name": "Chelsea Boots with Pointed Toe",
+      "description": "Black chelsea boots featuring a pointed toe for a sleek look.",
+      "price": 4950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/c15b/8cae/dd2246889f0d/5ec886e40e3c/12001529800-e1/12001529800-e1.jpg?ts=1736957860492&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "7",
+      "category": "men",
+      "type": "Footwear",
+      "name": "Chunky Chelsea Boots",
+      "description": "Black chunky chelsea boots adding a bold statement to your outfit.",
+      "price": 5550,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/8333/cfc1/e92141d4b7ac/4bec7d769731/12004429800-e1/12004429800-e1.jpg?ts=1749458690823&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "8",
+      "category": "men",
+      "type": "Fragrances",
+      "name": "Seoul + Lisboa 100 ML / 3.38 oz",
+      "description": "A unisex fragrance combining notes from Seoul and Lisboa.",
+      "price": 2150,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/b095/173b/1f0c49e6b782/fd8e71cfb890/20210028999-e1/20210028999-e1.jpg?ts=1726997476678&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "9",
+      "category": "men",
+      "type": "Jackets",
+      "name": "Leather Effect Biker Jacket",
+      "description": "A black biker jacket with a leather effect, offering an edgy look.",
+      "price": 5950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/44ce/41fc/9cbe4c84b01b/291cfe67e996/08491421800-e1/08491421800-e1.jpg?ts=1753360082771&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "10",
+      "category": "men",
+      "type": "Fragrances",
+      "name": "Silver + Gold EDT 2 X 90 ML / 3.04 oz",
+      "description": "A fragrance set featuring two 90 ML bottles of Silver and Gold EDT.",
+      "price": 2150,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/897c/7922/64a647589a45/848b4af16058/20210769999-e1/20210769999-e1.jpg?ts=1754561196109&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "11",
+      "category": "women",
+      "type": "Jackets",
+      "name": "Suede Effect Bomber Jacket",
+      "description": "Dark brown suede effect bomber jacket.",
+      "price": 5950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/484c/d32c/d9584e52bed7/f63d1a0f829e/04344655533-p/04344655533-p.jpg?ts=1755188001088&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "12",
+      "category": "women",
+      "type": "Dresses",
+      "name": "Contrast Sheer Dress",
+      "description": "Black sheer dress with contrast details.",
+      "price": 4950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/dbcf/10a4/e5894b7fbdb7/4f6c3cddd3f5/04772238800-p/04772238800-p.jpg?ts=1759481093365&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "13",
+      "category": "women",
+      "type": "Tops",
+      "name": "Peplum Stretch Top",
+      "description": "Black peplum stretch top.",
+      "price": 2550,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/3beb/6b90/e64944528ae5/47f2bc926fd8/05584216800-p/05584216800-p.jpg?ts=1758814151907&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "14",
+      "category": "women",
+      "type": "Bodysuits",
+      "name": "Contrast Stretch Bodysuit",
+      "description": "Black bodysuit with contrast detailing.",
+      "price": 3350,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/ff24/168a/90e84f048554/6ee69bb58da5/05584217800-p/05584217800-p.jpg?ts=1758814151978&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "15",
+      "category": "women",
+      "type": "Footwear",
+      "name": "Split Suede Heeled Boots",
+      "description": "Chocolate brown suede heeled boots.",
+      "price": 4950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/b4f5/1ba1/7e1a4d41b0d7/cfaaced88f4b/12107610105-e1/12107610105-e1.jpg?ts=1758268261914&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "16",
+      "category": "women",
+      "type": "Bags & Accessories",
+      "name": "Straw Basket Bag",
+      "description": "Beige straw basket bag with designs.",
+      "price": 2950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/a69d/2c77/538d4366b85c/414309f09d5c/16014610111-e1/16014610111-e1.jpg?ts=1758638020904&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "17",
+      "category": "women",
+      "type": "Dresses",
+      "name": "Sparkly Halterneck Dress",
+      "description": "Golden sparkly halterneck dress.",
+      "price": 9550,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/544a/6db5/7fe34a9aa06b/f29d0428fc5e/04772272303-p/04772272303-p.jpg?ts=1759334423934&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "18",
+      "category": "women",
+      "type": "Tops",
+      "name": "Beaded Satin Top",
+      "description": "Beige-pink beaded satin top.",
+      "price": 2950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/0535/36df/46c54965bb86/351d537f3dc4/05029211942-p/05029211942-p.jpg?ts=1758810029771&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "19",
+      "category": "women",
+      "type": "Dresses",
+      "name": "Mini Dress with Shoulder Pads",
+      "description": "Red mini dress with structured shoulders.",
+      "price": 4950,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/5020/ed8e/b0214db4a5f9/925d23e3cfe3/02180280632-a1/02180280632-a1.jpg?ts=1757580124797&w=330"
+      ],
+      "date": "2025-10-14"
+    },
+    {
+      "id": "20",
+      "category": "women",
+      "type": "Jewelry & Accessories",
+      "name": "Chain Cascade Earcuff Earrings",
+      "description": "Gold-tone chain cascade earrings.",
+      "price": 1550,
+      "count": 0,
+      "images": [
+        "https://static.zara.net/assets/public/e472/842f/d6ed4e88b21c/3bca8a23048d/04548264881-p/04548264881-p.jpg?ts=1758125810592&w=330"
+      ],
+      "date": "2025-10-14"
+    }
+  ]
+}
