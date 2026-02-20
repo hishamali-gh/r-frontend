@@ -184,7 +184,6 @@ export default function Cart() {
               ))}
             </div>
 
-            {/* Summary */}
             <div className="w-full md:w-1/3 pl-8 pr-5 py-5">
               <h2 className="text-xl font-semibold mb-4">
                 Order Summary
@@ -224,7 +223,6 @@ export default function Cart() {
           </div>
         )}
 
-        {/* Checkout Modal */}
         {checkoutOpen && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-start pt-20">
             <div className="bg-white w-full max-w-lg p-6 rounded shadow-lg">
