@@ -3,6 +3,7 @@ import "../index.css";
 import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
 import { useEffect, useState } from "react";
+import API from '../api.jsx'
 
 export default function Home() {
   const [newArrivals, setNewArrivals] = useState([]);
@@ -10,15 +11,11 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:3001/products");
-        const data = await response.json();
-
-        const latest = data
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .slice(0, 7);
-
-        setNewArrivals(latest);
-      } catch (error) {
+        const response = await API.get("products/products/");
+        setNewArrivals(response.data.slice(0, 7));
+      }
+      
+      catch (error) {
         console.error("Error fetching products:", error);
       }
     };
@@ -42,12 +39,12 @@ export default function Home() {
           <div className="flex gap-6 overflow-x-auto scrollbar-hide py-4">
             {newArrivals.map((product) => (
               <Link
-                key={product._id || product.id}
-                to={`/products/${product._id || product.id}`}
+                key={product.id}
+                to={`/products/${product.id}`}
                 className="flex-shrink-0 w-80 hover:scale-105 transition-transform duration-300"
               >
                 <img
-                  src={product.images}
+                  src={product.images?.[0]?.url}
                   alt={product.name}
                   className="w-full h-96 object-cover"
                 />
@@ -65,18 +62,21 @@ export default function Home() {
               alt="Fashion Banner"
             />
           </div>
+
           <div className="flex-1 mt-10 mb-22 md:mt-0">
             <img
               src="https://static.zara.net/assets/public/c16b/55ea/d96f49e8bce1/e8cb842f029e/08946839612-a2/08946839612-a2.jpg?ts=1759743706257&w=1663"
               alt="Fashion Banner"
             />
           </div>
+
           <div className="flex-1 mt-10 md:mt-0">
             <img
               src="https://static.zara.net/assets/public/ec46/47d2/68804bd1bcc4/5927b3fb2369/aw25-north-man-jackets-subhome-xmedia-40-puffer-landscape_0/poster/poster.jpg?ts=1759436504232"
               alt="Fashion Banner"
             />
           </div>
+          
           <div className="flex-1 mt-10 md:mt-0">
             <img
               src="https://static.zara.net/assets/public/4680/36fe/ed7744e08659/21b19d75fda4/08833062505-1-p/08833062505-1-p.jpg?ts=1759489048055&w=1753"

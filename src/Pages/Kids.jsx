@@ -2,59 +2,74 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../Components/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import API from "../api.jsx";
 
 export default function Kids() {
   const [products, setProducts] = useState([]);
-  const [user, setUser] = useState(null);
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const loggedIn = JSON.parse(localStorage.getItem('isLoggedIn'))
+  const navigate = useNavigate();
 
-    setIsLoggedIn(loggedIn)
-  }, [])
-
+  // ✅ Check JWT token
   useEffect(() => {
-    fetch("http://localhost:3001/kids")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data)
-        setLoading(false)
+    const token = localStorage.getItem("access");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  // ✅ Fetch Kids Products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await API.get("/products/products/", {
+          params: { category: "kids" },
+        });
+
+        setProducts(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
       }
-    )
-      .catch((err) => console.error(err));
+    };
+
+    fetchProducts();
   }, []);
 
+  // ✅ Fetch Wishlist
   useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    if (loggedInUser) setUser(loggedInUser);
-  }, []);
+    if (!isLoggedIn) return;
 
+    const fetchWishlist = async () => {
+      try {
+        const res = await API.get("/wishlist/wishlist/");
+        setWishlist(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchWishlist();
+  }, [isLoggedIn]);
+
+  // ✅ Toggle Wishlist
   const toggleWishlist = async (product) => {
-    if (!user) return;
+    if (!isLoggedIn) return;
 
-    const isInWishlist = user.wishlist?.some(
-      (p) => p.id === product.id && p.category === "kids"
+    const existingItem = wishlist.find(
+      (item) => item.product === product.id
     );
 
-    const updatedWishlist = isInWishlist
-      ? user.wishlist.filter(
-          (p) => !(p.id === product.id && p.category === "kids")
-        )
-      : [...(user.wishlist || []), { ...product, category: "kids" }];
-
     try {
-      const res = await fetch(`http://localhost:3001/user/${user.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wishlist: updatedWishlist }),
-      });
-      if (res.ok) {
-        const updatedUser = { ...user, wishlist: updatedWishlist };
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+      if (existingItem) {
+        await API.delete(`/wishlist/wishlist/${existingItem.id}/`);
+        setWishlist(wishlist.filter((item) => item.id !== existingItem.id));
+      } else {
+        const res = await API.post("/wishlist/wishlist/", {
+          product: product.id,
+        });
+        setWishlist([...wishlist, res.data]);
       }
     } catch (err) {
       console.error(err);
@@ -64,12 +79,12 @@ export default function Kids() {
   if (loading) return <p className="text-center mt-12">Loading...</p>;
 
   return (
-    <div className="min-h-screen flex flex-col relative bg-white">
+    <div className="min-h-screen flex flex-col bg-white">
       <NavBar />
 
       <header className="max-w-7xl mx-auto px-6 py-8 pt-28">
         <h1
-          className="text-6xl mb-12 text-gray-900 text-center z-10"
+          className="text-6xl mb-12 text-gray-900 text-center"
           style={{ fontFamily: "Playfair Display" }}
         >
           KID'S COLLECTION
@@ -79,9 +94,10 @@ export default function Kids() {
       <main className="flex-grow max-w-7xl mx-auto px-6 pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => {
-            const isInWishlist = user?.wishlist?.some(
-              (p) => p.id === product.id && p.category === "kids"
+            const isInWishlist = wishlist.some(
+              (item) => item.product === product.id
             );
+
             return (
               <div
                 key={product.id}
@@ -92,24 +108,18 @@ export default function Kids() {
                   onClick={() => navigate(`/kids/${product.id}`)}
                 >
                   <img
-                    src={product.images[0]}
+                    src={product.images[0]?.url}
                     alt={product.name}
-                    className="w-full object-contain transform transition-transform duration-500 ease-in-out group-hover:scale-105"
+                    className="w-full object-contain group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
-                <div className="p-1 flex items-center justify-between">
-                  <div className="text-left">
-                    <h2
-                      className="text-[9px] md:text-[10px] uppercase cursor-pointer"
-                      style={{ fontFamily: "SUSE Mono", fontWeight: "normal" }}
-                    >
+                <div className="p-2 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xs uppercase">
                       {product.name}
                     </h2>
-                    <p
-                      className="text-[9px] md:text-[10px] uppercase text-gray-800 cursor-pointer"
-                      style={{ fontFamily: "SUSE Mono", fontWeight: "normal" }}
-                    >
+                    <p className="text-xs text-gray-800">
                       ₹ {product.price}
                     </p>
                   </div>
@@ -117,15 +127,15 @@ export default function Kids() {
                   <button
                     onClick={() => toggleWishlist(product)}
                     disabled={!isLoggedIn}
-                    className={`transition text-[10px] md:text-[12px] cursor-pointer ${
+                    className={`text-lg ${
                       isInWishlist
-                        ? "text-green-600 hover:text-green-800"
+                        ? "text-red-600"
                         : isLoggedIn
-                        ? "text-red-600 hover:text-red-800"
+                        ? "text-gray-400 hover:text-red-600"
                         : "text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    {isInWishlist ? "⩗" : "⋈"}
+                    {isInWishlist ? <MdFavorite /> : <MdFavoriteBorder />}
                   </button>
                 </div>
               </div>

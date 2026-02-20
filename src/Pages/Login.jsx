@@ -1,63 +1,47 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import API from '../api.jsx'
 import '../index.css';
 
 export default function Login() {
-    const [users, setUsers] = useState([]);
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
-    const [emailError, setEmailError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [blockedError, setBlockedError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        axios.get(`http://localhost:3001/user`)
-            .then(res => setUsers(res.data))
-            .catch(err => console.error(err));
-    }, []);
-
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        setEmailError(false);
-        setPasswordError(false);
-        setBlockedError(false);
+        setErrorMessage('')
 
-        let valid = true;
-
-        if (!email.includes('@') || email.trim().length === 0) {
-            setEmailError(true);
-            valid = false;
-        }
-
-        if (password.trim().length < 6) {
-            setPasswordError(true);
-            valid = false;
-        }
-
-        if (!valid) return;
-
-        const existingUser = users.find(u => u.email === email);
-
-        if (!existingUser || existingUser.password !== password) {
-            setPasswordError(true);
+        if (!identifier.trim() || !password.trim()) {
+            setErrorMessage('All fields are required');
             return;
         }
 
-        if (existingUser.isBlock === true) {
-            setBlockedError(true);
-            return;
+        try {
+            const res = await API.post('acc/login/', {
+                identifier,
+                password
+            })
+
+            const { user, access, refresh } = res.data
+
+            localStorage.setItem("access", access);
+            localStorage.setItem("refresh", refresh);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            if (user.is_superuser) {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         }
 
-        localStorage.setItem('user', JSON.stringify(existingUser));
-        localStorage.setItem('isLoggedIn', true);
+        catch (err) {
+            const backendMessage = err.response?.data?.non_field_errors?.[0];
 
-        if (existingUser.role === 'admin') {
-            navigate('/admin');
-        } else {
-            navigate('/');
+            setErrorMessage(backendMessage);
         }
     };
 
@@ -82,17 +66,15 @@ export default function Login() {
             <form className="w-full max-w-md space-y-6 z-10" onSubmit={handleLogin} style={{ fontFamily: 'SUSE Mono' }}>
                 <div className="relative">
                     <input
-                        type="email"
-                        value={email}
-                        placeholder="Email"
+                        type="text"
+                        value={identifier}
+                        placeholder="Username or Email"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
                         onChange={(e) => {
-                            setEmail(e.target.value);
-                            setEmailError(false);
-                            setBlockedError(false);
+                            setIdentifier(e.target.value);
+                            setErrorMessage('')
                         }}
                     />
-                    {emailError && <p className='text-red-500 text-xs mt-1'>*Your email input is invalid!</p>}
                 </div>
 
                 <div className="relative">
@@ -103,17 +85,12 @@ export default function Login() {
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
                         onChange={(e) => {
                             setPassword(e.target.value);
-                            setPasswordError(false);
+                            setErrorMessage('')
                         }}
                     />
-                    {passwordError && <p className='text-red-500 text-xs mt-1'>*Invalid email or password!</p>}
-                </div>
 
-                {blockedError && (
-                    <p className='text-red-600 text-sm text-center -mt-2'>
-                        *This account is blocked. Please contact the administrator.
-                    </p>
-                )}
+                    {errorMessage && <p className='text-red-500 text-xs mt-1'>{errorMessage}</p>}
+                </div>
 
                 <button
                     type="submit"

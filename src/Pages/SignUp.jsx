@@ -1,90 +1,80 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
+import API from '../api.jsx';
 import '../index.css';
 
 export default function SignUp() {
-    const [users, setUsers] = useState([]);
     const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [pass, setPass] = useState('');
-    const [passConfirm, setPassConfirm] = useState('');
-    const [nameError, setNameError] = useState(false);
-    const [emailError, setEmailError] = useState(false);
-    const [passError, setPassError] = useState(false);
-    const [emailExists, setEmailExists] = useState(false);
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-
-    useEffect(() => {
-        axios.get(`http://localhost:3001/user`)
-            .then(res => setUsers(res.data))
-            .catch(error => console.error(error));
-    }, []);
 
     const handleSubmit = async function (e) {
         e.preventDefault();
 
-        setNameError(false);
-        setEmailError(false);
-        setPassError(false);
-        setEmailExists(false);
+        setErrors({});
 
-        let valid = true;
+        let validationErrors = {};
 
-        if (name.trim().length === 0) {
-            setNameError(true);
-            valid = false;
+        if (!username.trim()) {
+            validationErrors.username = 'Username is required';
         }
+
+        if (!name.trim()) {
+            validationErrors.name = 'Name is required'
+        }
+
         if (!email.includes('@') || email.trim().length === 0) {
-            setEmailError(true);
-            valid = false;
-        }
-        if (pass !== passConfirm || pass.length < 6) {
-            setPassError(true);
-            valid = false;
+            validationErrors.email = 'Enter a valid email'
         }
 
-        const existingUser = users.find(u => u.email === email);
-        if (existingUser) {
-            setEmailExists(true);
-            valid = false;
+        if (password !== confirmPassword || password.length < 6) {
+            validationErrors.password = 'Passwords must match and be at least 6 characters'
         }
 
-        if (!valid) return;
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+
+            return;
+        }
 
         try {
-            // Generate a new sequential id based on existing users
-            const nextId = Math.max(...users.map(u => Number(u.id))) + 1;
-
-            const user = {
-                id: nextId.toString(),
+            const res = await API.post('acc/register/', {
                 name: name,
+                username: username,
                 email: email,
-                password: pass,
-                role: "user",
-                isBlock: false,
-                cart: [],
-                orders: [],
-                wishlist: [],
-                date: new Date() // Signup date
-            };
-
-            const res = await axios.post(`http://localhost:3001/user`, user);
+                password: password,
+                confirm_password: confirmPassword
+            });
             console.log(res);
 
-            // Persist user and login state in localStorage
-            localStorage.setItem('user', JSON.stringify(res.data));
-            localStorage.setItem('isLoggedIn', true);
+            localStorage.setItem('access', res.data.access);
+            localStorage.setItem('refresh', res.data.refresh);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
 
-            // Reset form fields
             setName('');
+            setUsername('');
             setEmail('');
-            setPass('');
-            setPassConfirm('');
+            setPassword('');
+            setConfirmPassword('');
 
             navigate('/');
-        } catch (err) {
-            console.log(err.name, ":", err.message);
+        }
+        
+        catch (err) {
+            if (err.response?.data) {
+                const backendErrors = err.response.data;
+                const formattedErrors = {};
+
+                Object.keys(backendErrors).forEach((key) => {
+                    formattedErrors[key] = backendErrors[key][0];
+                });
+
+                setErrors(formattedErrors);
+            }
         }
     };
 
@@ -115,9 +105,23 @@ export default function SignUp() {
                         value={name}
                         placeholder="Full Name"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setName(e.target.value); setNameError(false); }}
+                        onChange={(e) => { setName(e.target.value); setErrors(prev => ({...prev, name: ''})); }}
                     />
-                    {nameError && <p className='text-red-500 text-xs mt-1'>*Your name input is invalid!</p>}
+
+                    {errors.name && <p className='text-red-500 text-xs mt-1'>{errors.name}</p>}
+                </div>
+
+                <div className="relative">
+                    <input
+                        type="text"
+                        id="username"
+                        value={username}
+                        placeholder="Username"
+                        className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
+                        onChange={(e) => { setUsername(e.target.value); setErrors(prev => ({...prev, username: ''})) }}
+                    />
+
+                    {errors.username && <p className='text-red-500 text-xs mt-1'>{errors.username}</p>}
                 </div>
 
                 <div className="relative">
@@ -127,20 +131,20 @@ export default function SignUp() {
                         value={email}
                         placeholder="Email"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setEmail(e.target.value); setEmailError(false); setEmailExists(false); }}
+                        onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({...prev, email: ''})) }}
                     />
-                    {emailError && <p className='text-red-500 text-xs mt-1'>*Your email input is invalid!</p>}
-                    {emailExists && <p className='text-xs mt-1'>*This email is already registered!</p>}
+
+                    {errors.email && <p className='text-red-500 text-xs mt-1'>{errors.email}</p>}
                 </div>
 
                 <div className="relative">
                     <input
                         type="password"
                         id="password"
-                        value={pass}
+                        value={password}
                         placeholder="Password"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setPass(e.target.value); setPassError(false); }}
+                        onChange={(e) => { setPassword(e.target.value); setErrors(prev => ({...prev, password: ''})); }}
                     />
                 </div>
 
@@ -148,12 +152,13 @@ export default function SignUp() {
                     <input
                         type="password"
                         id="confirmPassword"
-                        value={passConfirm}
+                        value={confirmPassword}
                         placeholder="Confirm Password"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setPassConfirm(e.target.value); setPassError(false); }}
+                        onChange={(e) => { setConfirmPassword(e.target.value); setErrors(prev => ({...prev, password: ''})); }}
                     />
-                    {passError && <p className='text-red-500 text-xs mt-1'>*Your password inputs are invalid!</p>}
+
+                    {errors.password && <p className='text-red-500 text-xs mt-1'>{errors.password}</p>}
                 </div>
 
                 <button
