@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,14 +31,32 @@ export default function Profile() {
     const fetchCart = async () => {
       try {
         const response = await API.get("cart/cart/");
-        setCart(response.data.items || []);
+
+        const data = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.items)
+          ? response.data.items
+          : [];
+
+        setCart(data);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
         toast.error("Failed to load cart.");
       }
     };
 
+    const fetchOrders = async () => {
+      try {
+        const response = await API.get("orders/my-orders/");
+        setOrders(response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        toast.error("Failed to load orders.");
+      }
+    };
+
     fetchCart();
+    fetchOrders();
   }, [navigate]);
 
   const handleLogout = () => {
@@ -104,6 +123,54 @@ export default function Profile() {
               WISHLIST
             </button>
           </Link>
+        </div>
+
+        {/* Orders Section */}
+        <div className="w-full max-w-4xl mt-16">
+          <h3
+            className="text-2xl mb-6 text-gray-900"
+            style={{ fontFamily: "Playfair Display" }}
+          >
+            MY ORDERS
+          </h3>
+
+          {orders.length === 0 ? (
+            <p
+              className="text-gray-600"
+              style={{ fontFamily: "SUSE Mono" }}
+            >
+              You haven’t placed any orders yet.
+            </p>
+          ) : (
+            orders.map((order) => (
+              <div
+                key={order.id}
+                className="border border-gray-200 p-6 mb-6 rounded-lg"
+              >
+                <p style={{ fontFamily: "SUSE Mono" }}>
+                  <strong>Order ID:</strong> {order.id}
+                </p>
+                <p style={{ fontFamily: "SUSE Mono" }}>
+                  <strong>Status:</strong> {order.status}
+                </p>
+                <p style={{ fontFamily: "SUSE Mono" }}>
+                  <strong>Total:</strong> ₹{order.total_price}
+                </p>
+
+                <div className="mt-4">
+                  {order.items.map((item) => (
+                    <p
+                      key={item.id}
+                      className="text-sm text-gray-700"
+                      style={{ fontFamily: "SUSE Mono" }}
+                    >
+                      Product ID: {item.product} | Quantity: {item.quantity} | ₹{item.price}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         <button

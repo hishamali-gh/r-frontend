@@ -37,7 +37,7 @@ export default function Details() {
 
     const fetchWishlist = async () => {
       try {
-        const res = await API.get("/wishlist/");
+        const res = await API.get("wishlist/wishlist/");
         setWishlist(res.data);
       } catch (err) {
         console.error(err);
@@ -46,7 +46,7 @@ export default function Details() {
 
     const fetchCart = async () => {
       try {
-        const res = await API.get("/cart/");
+        const res = await API.get("cart/cart/");
         setCartItems(res.data.items || []);
       } catch (err) {
         console.error(err);
@@ -72,13 +72,13 @@ export default function Details() {
         const item = wishlist.find(
           (w) => w.product === product.id
         );
-        await API.delete(`/wishlist/${item.id}/`);
+        await API.delete(`wishlist/wishlist/${item.id}/`);
         setWishlist((prev) =>
           prev.filter((w) => w.id !== item.id)
         );
         toast.info("Removed from wishlist!");
       } else {
-        const res = await API.post("/wishlist/", {
+        const res = await API.post("wishlist/wishlist/", {
           product: product.id,
         });
         setWishlist((prev) => [...prev, res.data]);
@@ -114,13 +114,13 @@ export default function Details() {
             c.product === product.id &&
             c.size === selectedSize
         );
-        await API.delete(`/cart/${item.id}/`);
+        await API.delete(`cart/cart/${item.id}/`);
         setCartItems((prev) =>
           prev.filter((c) => c.id !== item.id)
         );
         toast.info("Removed from cart!");
       } else {
-        const res = await API.post("/cart/", {
+        const res = await API.post("cart/cart/", {
           product: product.id,
           size: selectedSize,
           quantity: 1,

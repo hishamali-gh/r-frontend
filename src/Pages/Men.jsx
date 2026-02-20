@@ -26,9 +26,7 @@ export default function Men() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const params = {
-          category: 'MEN',
-        };
+        const params = { category: 'MEN' };
 
         if (sortOrder === 'price inc') params.ordering = 'price';
         if (sortOrder === 'price dec') params.ordering = '-price';
@@ -66,6 +64,12 @@ export default function Men() {
     fetchWishlist();
   }, [isLoggedIn]);
 
+  // 🔥 Normalize product ID safely
+  const getProductId = (item) => {
+    if (typeof item.product === 'object') return item.product.id;
+    return item.product;
+  };
+
   const toggleWishlist = async (product) => {
     if (!isLoggedIn) {
       toast.warn('Please log in to use the wishlist!', { autoClose: 2000 });
@@ -73,19 +77,25 @@ export default function Men() {
     }
 
     const existingItem = wishlist.find(
-      (item) => item.product === product.id
+      (item) => getProductId(item) === product.id
     );
 
     try {
       if (existingItem) {
         await API.delete(`/wishlist/wishlist/${existingItem.id}/`);
-        setWishlist(wishlist.filter((item) => item.id !== existingItem.id));
+
+        setWishlist((prev) =>
+          prev.filter((item) => item.id !== existingItem.id)
+        );
+
         toast.success('Removed from wishlist', { autoClose: 2000 });
       } else {
         const res = await API.post('/wishlist/wishlist/', {
           product: product.id,
         });
-        setWishlist([...wishlist, res.data]);
+
+        setWishlist((prev) => [...prev, res.data]);
+
         toast.success('Added to wishlist', { autoClose: 2000 });
       }
     } catch (err) {
@@ -169,7 +179,7 @@ export default function Men() {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {displayedProducts.map((product) => {
             const isInWishlist = wishlist.some(
-              (item) => item.product === product.id
+              (item) => getProductId(item) === product.id
             );
 
             return (
