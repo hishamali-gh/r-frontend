@@ -30,7 +30,7 @@ export default function NavBar() {
 
     return (
         <>
-            <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-white z-30 border-b border-gray-300'>
+            <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-transparent z-30'>
                 <Link to='/'>
                     <h1
                         className='text-2xl cursor-pointer'
