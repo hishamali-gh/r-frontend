@@ -11,12 +11,10 @@ export default function NavBar() {
     useEffect(() => {
         const checkLogin = () => {
             const token = localStorage.getItem('access');
-            
             setIsLoggedIn(!!token);
         };
 
         checkLogin();
-
         window.addEventListener('storage', checkLogin);
 
         return () => {
@@ -31,15 +29,16 @@ export default function NavBar() {
     return (
         <>
             <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-transparent z-30'>
-                <Link to='/'>
-                    <h1
-                        className='text-2xl cursor-pointer'
-                        style={{ fontFamily: 'Playwrite DE SAS, cursive' }}
-                    >
-                        willow
-                    </h1>
-                </Link>
 
+                {/* Left: Hamburger */}
+                <button
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className='hover:text-gray-500 transition text-xl cursor-pointer'
+                >
+                    <RxHamburgerMenu />
+                </button>
+
+                {/* Right: Login/Profile + Cart */}
                 <div
                     className='flex items-center space-x-8'
                     style={{ fontFamily: 'SUSE Mono' }}
@@ -72,13 +71,6 @@ export default function NavBar() {
                             </Link>
                         </li>
                     </ul>
-
-                    <button
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        className='hover:text-gray-500 transition text-xl cursor-pointer'
-                    >
-                        <RxHamburgerMenu />
-                    </button>
                 </div>
             </nav>
 
@@ -92,10 +84,10 @@ export default function NavBar() {
                 onClick={() => setMenuOpen(false)}
             ></div>
 
-            {/* Side Menu */}
+            {/* Side Menu (Now opens from left) */}
             <div
-                className={`fixed top-0 right-0 h-full w-64 bg-white/50 backdrop-blur-md border-l border-white/40 transform transition-transform duration-300 ease-in-out z-50 ${
-                    menuOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 left-0 h-full w-64 bg-white/50 backdrop-blur-md border-r border-white/40 transform transition-transform duration-300 ease-in-out z-50 ${
+                    menuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
                 style={{ fontFamily: 'SUSE Mono' }}
             >
