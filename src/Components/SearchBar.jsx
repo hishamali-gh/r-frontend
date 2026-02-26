@@ -45,7 +45,7 @@ export default function SearchBar() {
           value={query}
           onChange={handleChange}
           placeholder='Search...'
-          className='w-full px-1 py-2 focus:outline-none text-sm bg-transparent'
+          className='w-full px-1 py-2 focus:outline-none text-sm bg-transparent uppercase'
         />
       </div>
 

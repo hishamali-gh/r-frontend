@@ -1,28 +1,20 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loggedIn = JSON.parse(localStorage.getItem('isLoggedIn'))
-    setIsLoggedIn(loggedIn)
+    const token = localStorage.getItem('access');
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.role === "admin") {
-      setUser(storedUser);
+    if (!token) {
+      navigate('/login');
+
+      return;
     }
-  }, []);
 
-  if (!user) {
-    return (
-      <div className="h-screen flex items-center justify-center text-xl text-gray-500">
-        You do not have access to this page.
-      </div>
-    );
-  }
+  }, []);
 
   const tabs = [
     { name: "dashboard", path: "dashboard" },
@@ -33,7 +25,7 @@ export default function Admin() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setIsLoggedIn(false);
+
     navigate("/login");
   };
 

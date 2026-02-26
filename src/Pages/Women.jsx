@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
 import { ToastContainer, toast } from 'react-toastify';
-import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
+import { MdFavorite } from 'react-icons/md';
 import API from '../api.jsx';
 
 export default function Women() {
@@ -26,9 +26,7 @@ export default function Women() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const params = {
-          category: 'WOMEN',
-        };
+        const params = { category: 'WOMEN' };
 
         if (sortOrder === 'price inc') params.ordering = 'price';
         if (sortOrder === 'price dec') params.ordering = '-price';
@@ -37,11 +35,12 @@ export default function Women() {
 
         setProducts(response.data);
 
+        // Stable sorted types
         const uniqueTypes = [
           ...new Set(response.data.map((p) => p.product_type)),
-        ];
-        setTypes(uniqueTypes);
+        ].sort();
 
+        setTypes(uniqueTypes);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -79,25 +78,21 @@ export default function Women() {
     try {
       if (existingItem) {
         await API.delete(`/wishlist/wishlist/${existingItem.id}/`);
-        setWishlist(wishlist.filter((item) => item.id !== existingItem.id));
+        setWishlist((prev) =>
+          prev.filter((item) => item.id !== existingItem.id)
+        );
         toast.success('Removed from wishlist', { autoClose: 2000 });
       } else {
         const res = await API.post('/wishlist/wishlist/', {
           product: product.id,
         });
-        setWishlist([...wishlist, res.data]);
+        setWishlist((prev) => [...prev, res.data]);
         toast.success('Added to wishlist', { autoClose: 2000 });
       }
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong.');
     }
-  };
-
-  const getSortLabel = () => {
-    if (sortOrder === 'price inc') return 'Price ↑';
-    if (sortOrder === 'price dec') return 'Price ↓';
-    return 'Default';
   };
 
   if (loading) return <p className='text-center mt-12'>Loading...</p>;
@@ -112,6 +107,7 @@ export default function Women() {
       <NavBar />
       <ToastContainer position='top-center' theme='dark' />
 
+      {/* Header */}
       <header className='max-w-7xl mx-auto px-6 py-8 pt-28'>
         <h1
           className='text-6xl mb-12 text-gray-900 text-center'
@@ -121,50 +117,73 @@ export default function Women() {
         </h1>
       </header>
 
-      <div className='flex flex-wrap justify-center gap-4 mt-8 mb-12'>
-        <button
-          onClick={() => setSelectedType('View All')}
-          className={`text-xs uppercase ${
-            selectedType === 'View All'
-              ? 'text-black font-semibold'
-              : 'text-gray-600 hover:text-black'
-          }`}
-        >
-          View All
-        </button>
-
-        {types.map((type, i) => (
+      {/* Filters + Sort (shifted slightly right) */}
+      <div className="max-w-7xl mx-auto px-6 mb-12">
+        <div className="w-full flex flex-wrap items-center gap-6 pl-10">
           <button
-            key={i}
-            onClick={() => setSelectedType(type)}
+            onClick={() => setSelectedType('View All')}
             className={`text-xs uppercase ${
-              selectedType === type
+              selectedType === 'View All'
                 ? 'text-black font-semibold'
                 : 'text-gray-600 hover:text-black'
             }`}
           >
-            {type}
+            View All
           </button>
-        ))}
 
-        <button
-          className='uppercase text-xs font-bold transition-all duration-200'
-          onMouseEnter={() => setIsSortHovered(true)}
-          onMouseLeave={() => setIsSortHovered(false)}
-          onClick={() =>
-            setSortOrder(
-              sortOrder === 'default'
-                ? 'price inc'
-                : sortOrder === 'price inc'
-                ? 'price dec'
-                : 'default'
-            )
-          }
-        >
-          {isSortHovered ? getSortLabel() : 'Sort'}
-        </button>
+          {types.map((type, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedType(type)}
+              className={`text-xs uppercase ${
+                selectedType === type
+                  ? 'text-black font-semibold'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              {type}
+            </button>
+          ))}
+
+          {/* Smooth sort crossfade */}
+          <button
+            className="relative uppercase text-xs font-bold w-24 text-center"
+            onMouseEnter={() => setIsSortHovered(true)}
+            onMouseLeave={() => setIsSortHovered(false)}
+            onClick={() =>
+              setSortOrder(
+                sortOrder === 'default'
+                  ? 'price inc'
+                  : sortOrder === 'price inc'
+                  ? 'price dec'
+                  : 'default'
+              )
+            }
+          >
+            <span
+              className={`transition-opacity duration-300 ${
+                isSortHovered ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              Sort
+            </span>
+
+            <span
+              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                isSortHovered ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {sortOrder === 'price inc'
+                ? 'Price inc'
+                : sortOrder === 'price dec'
+                ? 'Price dec'
+                : 'Default'}
+            </span>
+          </button>
+        </div>
       </div>
 
+      {/* Product Grid */}
       <main className='flex-grow max-w-7xl mx-auto px-6 pb-12'>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {displayedProducts.map((product) => {
@@ -173,39 +192,47 @@ export default function Women() {
             );
 
             return (
-              <div key={product.id} className='bg-white group'>
+              <div key={product.id} className='bg-white'>
+
+                {/* Image hover isolated */}
                 <div
-                  className='overflow-hidden cursor-pointer'
+                  className='overflow-hidden cursor-pointer group'
                   onClick={() => navigate(`/women/${product.id}`)}
                 >
                   <img
                     src={product.images[0]?.url}
                     alt={product.name}
-                    className='w-full object-contain group-hover:scale-105 transition-transform duration-500'
+                    className='w-full object-contain transition-transform duration-500 group-hover:scale-105'
                   />
                 </div>
 
-                <div className='p-2 flex items-center justify-between'>
-                  <div>
-                    <h2 className='text-xs uppercase'>
+                <div className='p-2 flex items-start justify-between gap-2'>
+                  <div className="flex-1 min-w-0">
+                    <h2 className='text-xs uppercase truncate'>
                       {product.name}
                     </h2>
-                    <p className='text-xs text-gray-800'>
+                    <p className='text-xs text-gray-800 mt-1'>
                       ₹ {product.price}
                     </p>
                   </div>
 
+                  {/* Smooth single-icon wishlist */}
                   <button
                     onClick={() => toggleWishlist(product)}
-                    className={`text-lg ${
-                      isInWishlist
-                        ? 'text-red-600'
-                        : 'text-gray-400 hover:text-red-600'
-                    }`}
+                    className='inline-flex items-start justify-center pt-1 flex-shrink-0 group'
                   >
-                    {isInWishlist ? <MdFavorite /> : <MdFavoriteBorder />}
+                    <MdFavorite
+                      className={`
+                        w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
+                        transform
+                        ${isInWishlist
+                          ? 'text-red-600 scale-100 opacity-100'
+                          : 'text-gray-300 scale-95 opacity-70 group-hover:text-red-600 group-hover:scale-110 group-hover:opacity-100'}
+                      `}
+                    />
                   </button>
                 </div>
+
               </div>
             );
           })}
