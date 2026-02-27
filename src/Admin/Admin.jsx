@@ -1,20 +1,26 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import API from "../api.jsx"
 
 export default function Admin() {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('access');
+    const checkAdmin = async () => {
+      try {
+        const res = await API.get('acc/me/');
+        const isAdmin = res.data.is_superuser;
 
-    if (!token) {
-      navigate('/login');
+        if (!isAdmin) navigate('/login')
+      }
 
-      return;
+      catch (err) {
+        navigate('/login')
+      }
     }
 
-  }, []);
+    checkAdmin();
+  }, [])
 
   const tabs = [
     { name: "dashboard", path: "dashboard" },

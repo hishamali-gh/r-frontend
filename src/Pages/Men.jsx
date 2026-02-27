@@ -1,28 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { MdFavorite } from 'react-icons/md';
 import API from '../api.jsx';
+import { AuthContext } from '../Components/AuthContext.jsx';
 
 export default function Men() {
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState('View All');
   const [sortOrder, setSortOrder] = useState('default');
   const [isSortHovered, setIsSortHovered] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  const { user, loading } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('access');
-    setIsLoggedIn(!!token);
-  }, []);
-
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -40,17 +38,22 @@ export default function Men() {
         ].sort();
 
         setTypes(uniqueTypes);
-        setLoading(false);
       } catch (err) {
         console.error(err);
+      } finally {
+        setPageLoading(false);
       }
     };
 
     fetchProducts();
   }, [sortOrder]);
 
+  // Fetch wishlist only if user exists
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!user) {
+      setWishlist([]);
+      return;
+    }
 
     const fetchWishlist = async () => {
       try {
@@ -62,7 +65,7 @@ export default function Men() {
     };
 
     fetchWishlist();
-  }, [isLoggedIn]);
+  }, [user]);
 
   const getProductId = (item) => {
     if (typeof item.product === 'object') return item.product.id;
@@ -70,7 +73,7 @@ export default function Men() {
   };
 
   const toggleWishlist = async (product) => {
-    if (!isLoggedIn) {
+    if (!user) {
       toast.warn('Please log in to use the wishlist!', { autoClose: 2000 });
       return;
     }
@@ -99,7 +102,10 @@ export default function Men() {
     }
   };
 
-  if (loading) return <p className='text-center mt-12'>Loading...</p>;
+  // Wait for both auth check + page fetch
+  if (loading || pageLoading) {
+    return <p className='text-center mt-12'>Loading...</p>;
+  }
 
   const displayedProducts =
     selectedType === 'View All'
@@ -120,7 +126,6 @@ export default function Men() {
         </h1>
       </header>
 
-      {/* Shifted slightly more right */}
       <div className="max-w-7xl mx-auto px-6 mb-12">
         <div className="w-full flex flex-wrap items-center gap-6 pl-10">
           <button

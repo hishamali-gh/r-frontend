@@ -20,13 +20,11 @@ export default function Profile() {
       return;
     }
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (!storedUser) {
-      navigate("/login");
-      return;
-    }
+    const fetchUser = async () => {
+      const storedUser = await API.get('acc/me/');
 
-    setUser(storedUser);
+      setUser(storedUser.data);
+    };
 
     const fetchCart = async () => {
       try {
@@ -55,6 +53,7 @@ export default function Profile() {
       }
     };
 
+    fetchUser();
     fetchCart();
     fetchOrders();
   }, [navigate]);
@@ -62,7 +61,6 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    localStorage.removeItem("user");
     navigate("/login");
   };
 

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../Components/AuthContext.jsx";
 import API from '../api.jsx'
 import '../index.css';
 
@@ -7,6 +8,7 @@ export default function Login() {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -29,11 +31,13 @@ export default function Login() {
 
             localStorage.setItem("access", access);
             localStorage.setItem("refresh", refresh);
-            localStorage.setItem("user", JSON.stringify(user));
+            setUser(user);
 
             if (user.is_superuser) {
                 navigate('/admin');
-            } else {
+            }
+            
+            else {
                 navigate('/');
             }
         }

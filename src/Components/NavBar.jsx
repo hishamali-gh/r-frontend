@@ -1,30 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import '../index.css';
 import SearchBar from './SearchBar.jsx';
 import { RxHamburgerMenu } from 'react-icons/rx';
+import { AuthContext } from './AuthContext.jsx';
 
 export default function NavBar() {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const checkLogin = () => {
-            const token = localStorage.getItem('access');
-            setIsLoggedIn(!!token);
-        };
-
-        checkLogin();
-        window.addEventListener('storage', checkLogin);
-
-        return () => {
-            window.removeEventListener('storage', checkLogin);
-        };
-    }, []);
+    const { user, loading } = useContext(AuthContext);
 
     useEffect(() => {
         document.body.style.overflow = menuOpen ? 'hidden' : 'auto';
     }, [menuOpen]);
+
+    if (loading) {
+        return null;
+    }
 
     return (
         <>
@@ -45,7 +36,7 @@ export default function NavBar() {
                 >
                     <ul className='flex space-x-6 items-center'>
                         <li>
-                            {isLoggedIn ? (
+                            {user ? (
                                 <Link
                                     className='hover:text-gray-500 transition cursor-pointer'
                                     to='/profile'
@@ -84,7 +75,7 @@ export default function NavBar() {
                 onClick={() => setMenuOpen(false)}
             ></div>
 
-            {/* Side Menu (Now opens from left) */}
+            {/* Side Menu */}
             <div
                 className={`fixed top-0 left-0 h-full w-64 bg-white/50 backdrop-blur-md border-r border-white/40 transform transition-transform duration-300 ease-in-out z-50 ${
                     menuOpen ? 'translate-x-0' : '-translate-x-full'

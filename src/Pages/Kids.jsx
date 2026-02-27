@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../Components/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import API from "../api.jsx";
+import { AuthContext } from "../Components/AuthContext.jsx";
 
 export default function Kids() {
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  const { user, loading } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
-  // ✅ Check JWT token
-  useEffect(() => {
-    const token = localStorage.getItem("access");
-    setIsLoggedIn(!!token);
-  }, []);
-
-  // ✅ Fetch Kids Products
+  // Fetch Kids Products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await API.get("/products/products/", {
-          params: { category: "kids" },
+          params: { category: "KIDS" },
         });
 
         setProducts(response.data);
-        setLoading(false);
       } catch (err) {
         console.error(err);
+      } finally {
+        setPageLoading(false);
       }
     };
 
     fetchProducts();
   }, []);
 
-  // ✅ Fetch Wishlist
+  // Fetch Wishlist only if logged in
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!user) {
+      setWishlist([]);
+      return;
+    }
 
     const fetchWishlist = async () => {
       try {
@@ -51,11 +51,10 @@ export default function Kids() {
     };
 
     fetchWishlist();
-  }, [isLoggedIn]);
+  }, [user]);
 
-  // ✅ Toggle Wishlist
   const toggleWishlist = async (product) => {
-    if (!isLoggedIn) return;
+    if (!user) return;
 
     const existingItem = wishlist.find(
       (item) => item.product === product.id
@@ -64,19 +63,24 @@ export default function Kids() {
     try {
       if (existingItem) {
         await API.delete(`/wishlist/wishlist/${existingItem.id}/`);
-        setWishlist(wishlist.filter((item) => item.id !== existingItem.id));
+        setWishlist((prev) =>
+          prev.filter((item) => item.id !== existingItem.id)
+        );
       } else {
         const res = await API.post("/wishlist/wishlist/", {
           product: product.id,
         });
-        setWishlist([...wishlist, res.data]);
+        setWishlist((prev) => [...prev, res.data]);
       }
     } catch (err) {
       console.error(err);
     }
   };
 
-  if (loading) return <p className="text-center mt-12">Loading...</p>;
+  // Wait for both auth + products
+  if (loading || pageLoading) {
+    return <p className="text-center mt-12">Loading...</p>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -126,11 +130,11 @@ export default function Kids() {
 
                   <button
                     onClick={() => toggleWishlist(product)}
-                    disabled={!isLoggedIn}
+                    disabled={!user}
                     className={`text-lg ${
                       isInWishlist
                         ? "text-red-600"
-                        : isLoggedIn
+                        : user
                         ? "text-gray-400 hover:text-red-600"
                         : "text-gray-400 cursor-not-allowed"
                     }`}
