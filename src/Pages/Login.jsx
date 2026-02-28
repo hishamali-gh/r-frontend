@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../Components/AuthContext.jsx";
 import API from '../api.jsx'
@@ -34,7 +34,7 @@ export default function Login() {
             setUser(user);
 
             if (user.is_superuser) {
-                navigate('/admin');
+                navigate('/admin/dashboard');
             }
             
             else {

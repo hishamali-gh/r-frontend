@@ -19,12 +19,13 @@ import Users from "./Admin/Users.jsx";
 import Products from "./Admin/Products.jsx";
 import Orders from "./Admin/Orders.jsx";
 
-import ProtectedRoute from "./Components/ProtectedRoute.jsx";
+import ProtectedRoute, { AdminRoute } from "./Components/ProtectedRoute.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/" element={<Home />} />
@@ -42,6 +43,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/cart"
           element={
@@ -51,20 +53,16 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Admin />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<Admin />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="products" element={<Products />} />
+            <Route path="orders" element={<Orders />} />
+          </Route>
         </Route>
+
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} />

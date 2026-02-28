@@ -12,34 +12,20 @@ export default function SignUp() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
+    const renderErrors = (field) => {
+        if (!errors[field] || errors[field].length === 0) return null;
+
+        return (
+            <p className='text-red-500 text-xs mt-1'>
+                {errors[field][0]}
+            </p>
+        );
+    };
+
     const handleSubmit = async function (e) {
         e.preventDefault();
 
         setErrors({});
-
-        let validationErrors = {};
-
-        if (!username.trim()) {
-            validationErrors.username = 'Username is required';
-        }
-
-        if (!name.trim()) {
-            validationErrors.name = 'Name is required'
-        }
-
-        if (!email.includes('@') || email.trim().length === 0) {
-            validationErrors.email = 'Enter a valid email'
-        }
-
-        if (password !== confirmPassword || password.length < 6) {
-            validationErrors.password = 'Passwords must match and be at least 6 characters'
-        }
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-
-            return;
-        }
 
         try {
             const res = await API.post('acc/register/', {
@@ -49,7 +35,6 @@ export default function SignUp() {
                 password: password,
                 confirm_password: confirmPassword
             });
-            console.log(res);
 
             localStorage.setItem('access', res.data.access);
             localStorage.setItem('refresh', res.data.refresh);
@@ -70,7 +55,9 @@ export default function SignUp() {
                 const formattedErrors = {};
 
                 Object.keys(backendErrors).forEach((key) => {
-                    formattedErrors[key] = backendErrors[key][0];
+                    formattedErrors[key] = Array.isArray(backendErrors[key])
+                        ? backendErrors[key]
+                        : [backendErrors[key]];
                 });
 
                 setErrors(formattedErrors);
@@ -98,6 +85,9 @@ export default function SignUp() {
             </h2>
 
             <form className="w-full max-w-md space-y-6 z-10" onSubmit={handleSubmit} style={{ fontFamily: 'SUSE Mono' }}>
+
+                {renderErrors('non_field_errors')}
+
                 <div className="relative">
                     <input
                         type="text"
@@ -105,10 +95,9 @@ export default function SignUp() {
                         value={name}
                         placeholder="Full Name"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setName(e.target.value); setErrors(prev => ({...prev, name: ''})); }}
+                        onChange={(e) => { setName(e.target.value); setErrors(prev => ({...prev, name: null})); }}
                     />
-
-                    {errors.name && <p className='text-red-500 text-xs mt-1'>{errors.name}</p>}
+                    {renderErrors('name')}
                 </div>
 
                 <div className="relative">
@@ -118,10 +107,9 @@ export default function SignUp() {
                         value={username}
                         placeholder="Username"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setUsername(e.target.value); setErrors(prev => ({...prev, username: ''})) }}
+                        onChange={(e) => { setUsername(e.target.value); setErrors(prev => ({...prev, username: null})) }}
                     />
-
-                    {errors.username && <p className='text-red-500 text-xs mt-1'>{errors.username}</p>}
+                    {renderErrors('username')}
                 </div>
 
                 <div className="relative">
@@ -131,10 +119,9 @@ export default function SignUp() {
                         value={email}
                         placeholder="Email"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({...prev, email: ''})) }}
+                        onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({...prev, email: null})) }}
                     />
-
-                    {errors.email && <p className='text-red-500 text-xs mt-1'>{errors.email}</p>}
+                    {renderErrors('email')}
                 </div>
 
                 <div className="relative">
@@ -144,8 +131,9 @@ export default function SignUp() {
                         value={password}
                         placeholder="Password"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setPassword(e.target.value); setErrors(prev => ({...prev, password: ''})); }}
+                        onChange={(e) => { setPassword(e.target.value); setErrors(prev => ({...prev, password: null})); }}
                     />
+                    {renderErrors('password')}
                 </div>
 
                 <div className="relative">
@@ -155,10 +143,12 @@ export default function SignUp() {
                         value={confirmPassword}
                         placeholder="Confirm Password"
                         className="w-full px-0 py-2 text-gray-800 placeholder-gray-400 focus:outline-none border-b border-gray-400 focus:border-gray-800 transition"
-                        onChange={(e) => { setConfirmPassword(e.target.value); setErrors(prev => ({...prev, password: ''})); }}
+                        onChange={(e) => { 
+                            setConfirmPassword(e.target.value); 
+                            setErrors(prev => ({...prev, confirm_password: null})); 
+                        }}
                     />
-
-                    {errors.password && <p className='text-red-500 text-xs mt-1'>{errors.password}</p>}
+                    {renderErrors('confirm_password')}
                 </div>
 
                 <button

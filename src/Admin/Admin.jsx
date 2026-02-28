@@ -1,26 +1,10 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import API from "../api.jsx"
+import { useContext } from 'react';
+import { AuthContext } from "../Components/AuthContext";
 
 export default function Admin() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      try {
-        const res = await API.get('acc/me/');
-        const isAdmin = res.data.is_superuser;
-
-        if (!isAdmin) navigate('/login')
-      }
-
-      catch (err) {
-        navigate('/login')
-      }
-    }
-
-    checkAdmin();
-  }, [])
+  const { logout } = useContext(AuthContext);
 
   const tabs = [
     { name: "dashboard", path: "dashboard" },
@@ -30,7 +14,7 @@ export default function Admin() {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    logout();
 
     navigate("/login");
   };

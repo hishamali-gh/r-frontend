@@ -1,32 +1,35 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import API from '../api'
 
 export default function Users() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await axios.get('http://localhost:3001/user')
-                const filtered = res.data.filter(u => u.role === 'user')
-                setUsers(filtered)
-            } catch (err) {
-                console.error('Failed to fetch users:', err)
-            } finally {
-                setLoading(false)
-            }
-        }
-
         fetchUsers()
     }, [])
 
-    const handleToggleBlock = async (id, isBlock) => {
+    const fetchUsers = async () => {
         try {
-            await axios.patch(`http://localhost:3001/user/${id}`, { isBlock: !isBlock })
+            const res = await API.get('acc/users/')
+            const filtered = res.data.filter(u => !u.is_superuser)
+            setUsers(filtered)
+        } catch (err) {
+            console.error('Failed to fetch users:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleToggleBlock = async (id, isActive) => {
+        try {
+            await API.patch(`acc/users/${id}/`, {
+                is_active: !isActive
+            })
+
             setUsers(prev =>
                 prev.map(u =>
-                    u.id === id ? { ...u, isBlock: !isBlock } : u
+                    u.id === id ? { ...u, is_active: !isActive } : u
                 )
             )
         } catch (err) {
@@ -54,7 +57,7 @@ export default function Users() {
                         <th className="py-3 px-3 text-left w-[25%]">Name</th>
                         <th className="py-3 px-6 text-center w-[30%]">Email</th>
                         <th className="py-3 px-6 text-center w-[25%]">Status</th>
-                        <th className="py-3 px-5 text-right w-[20%]">Block</th>
+                        <th className="py-3 px-5 text-right w-[20%]">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,25 +68,29 @@ export default function Users() {
                         >
                             <td className="py-3 px-3 text-left">{u.name}</td>
                             <td className="py-3 px-6 text-center text-gray-600">{u.email}</td>
+
                             <td className="py-3 px-6 text-center">
                                 <span
-                                    className={`${u.isBlock
-                                        ? 'text-red-500'
-                                        : 'text-green-600'
-                                        } font-medium`}
+                                    className={`${
+                                        !u.is_active
+                                            ? 'text-red-500'
+                                            : 'text-green-600'
+                                    } font-medium`}
                                 >
-                                    {u.isBlock ? 'Blocked' : 'Active'}
+                                    {!u.is_active ? 'Blocked' : 'Active'}
                                 </span>
                             </td>
+
                             <td className="py-3 px-3 text-right">
                                 <button
-                                    onClick={() => handleToggleBlock(u.id, u.isBlock)}
-                                    className={`text-sm px-2 py-1 cursor-pointer transition ${u.isBlock
-                                        ? 'text-green-700 hover:text-green-500'
-                                        : 'text-red-700 hover:text-red-500'
-                                        }`}
+                                    onClick={() => handleToggleBlock(u.id, u.is_active)}
+                                    className={`text-sm px-2 py-1 cursor-pointer transition ${
+                                        !u.is_active
+                                            ? 'text-green-700 hover:text-green-500'
+                                            : 'text-red-700 hover:text-red-500'
+                                    }`}
                                 >
-                                    {u.isBlock ? 'Unblock' : 'Block'}
+                                    {!u.is_active ? 'Unblock' : 'Block'}
                                 </button>
                             </td>
                         </tr>

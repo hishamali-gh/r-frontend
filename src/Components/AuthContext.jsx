@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
     
             try {
                 const res = await API.get('acc/me/');
+
+                console.log(res.data);
     
                 setUser(res.data);
             }
@@ -36,8 +38,14 @@ export const AuthProvider = ({ children }) => {
         checkUser();
     }, [])
 
+    const logout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        setUser(null);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, setUser, loading }}>
+        <AuthContext.Provider value={{ user, setUser, loading, logout }}>
             { children }
         </AuthContext.Provider>
     )
