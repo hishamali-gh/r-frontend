@@ -17,8 +17,14 @@ export default function Men() {
   const [pageLoading, setPageLoading] = useState(true);
 
   const { user, loading } = useContext(AuthContext);
-
   const navigate = useNavigate();
+
+  // Helper to find the correct image URL
+  const getProductDisplayImage = (product) => {
+    if (!product.images || product.images.length === 0) return '';
+    const mainImage = product.images.find((img) => img.main);
+    return mainImage ? mainImage.url : product.images[0]?.url;
+  };
 
   // Fetch products
   useEffect(() => {
@@ -31,10 +37,13 @@ export default function Men() {
 
         const response = await API.get('/products/products/', { params });
 
-        setProducts(response.data);
+        // FILTER: Only keep products where is_active is truthy
+        const activeProducts = response.data.filter((p) => p.is_active);
+
+        setProducts(activeProducts);
 
         const uniqueTypes = [
-          ...new Set(response.data.map((p) => p.product_type)),
+          ...new Set(activeProducts.map((p) => p.product_type)),
         ].sort();
 
         setTypes(uniqueTypes);
@@ -102,7 +111,6 @@ export default function Men() {
     }
   };
 
-  // Wait for both auth check + page fetch
   if (loading || pageLoading) {
     return <p className='text-center mt-12'>Loading...</p>;
   }
@@ -204,7 +212,7 @@ export default function Men() {
                   onClick={() => navigate(`/men/${product.id}`)}
                 >
                   <img
-                    src={product.images[0]?.url}
+                    src={getProductDisplayImage(product)}
                     alt={product.name}
                     className='w-full object-contain transition-transform duration-500 group-hover:scale-105'
                   />

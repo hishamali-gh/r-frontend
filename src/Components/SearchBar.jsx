@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api.jsx';
 
@@ -9,27 +9,27 @@ export default function SearchBar() {
 
   const handleChange = async (e) => {
     const value = e.target.value;
-
     setQuery(value);
 
     if (!value.trim()) {
       setSuggestions([]);
-      
       return;
     }
 
     try {
       const res = await API.get(`/products/products/?search=${value}`);
-
+      
+      // Handle both paginated and non-paginated responses
       const data = res.data.results || res.data;
 
-      setSuggestions(data);
-    }
-    
-    catch (err) {
+      // Only show items where is_active is true
+      const activeSuggestions = data.filter((item) => item.is_active === true);
+
+      setSuggestions(activeSuggestions);
+    } catch (err) {
       console.error('Search error:', err);
     }
-  }
+  };
 
   function handleNavigate(item) {
     setQuery('');
@@ -44,14 +44,14 @@ export default function SearchBar() {
           type='text'
           value={query}
           onChange={handleChange}
-          placeholder='Search...'
+          placeholder='SEARCH...'
           className='w-full px-1 py-2 focus:outline-none text-sm bg-transparent uppercase'
         />
       </div>
 
       {suggestions.length > 0 && (
         <ul
-          className='absolute left-0 w-full mt-1 max-h-80 overflow-hidden z-50'
+          className='absolute left-0 w-full mt-1 max-h-80 overflow-y-auto z-50'
           style={{
             background: 'transparent',
             scrollbarWidth: 'none', // Firefox

@@ -55,9 +55,9 @@ export default function Users() {
                 <thead>
                     <tr className="border-b border-gray-200 text-gray-600 text-sm uppercase">
                         <th className="py-3 px-3 text-left w-[25%]">Name</th>
-                        <th className="py-3 px-6 text-center w-[30%]">Email</th>
-                        <th className="py-3 px-6 text-center w-[25%]">Status</th>
-                        <th className="py-3 px-5 text-right w-[20%]">Action</th>
+                        <th className="py-3 px-6 text-left w-[30%]">Email</th>
+                        <th className="py-3 px-6 text-left w-[25%]">Status</th>
+                        <th className="py-3 px-5 text-left w-[20%]">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,9 +67,9 @@ export default function Users() {
                             className="border-b border-gray-100 hover:bg-gray-50 transition"
                         >
                             <td className="py-3 px-3 text-left">{u.name}</td>
-                            <td className="py-3 px-6 text-center text-gray-600">{u.email}</td>
+                            <td className="py-3 px-6 text-left text-gray-600">{u.email}</td>
 
-                            <td className="py-3 px-6 text-center">
+                            <td className="py-3 px-6 text-left">
                                 <span
                                     className={`${
                                         !u.is_active
@@ -81,7 +81,7 @@ export default function Users() {
                                 </span>
                             </td>
 
-                            <td className="py-3 px-3 text-right">
+                            <td className="py-3 px-3 text-left">
                                 <button
                                     onClick={() => handleToggleBlock(u.id, u.is_active)}
                                     className={`text-sm px-2 py-1 cursor-pointer transition ${

@@ -12,8 +12,20 @@ export default function Kids() {
   const [pageLoading, setPageLoading] = useState(true);
 
   const { user, loading } = useContext(AuthContext);
-
   const navigate = useNavigate();
+
+  // Helper to find the correct image URL (Prioritizing 'main' flag)
+  const getProductDisplayImage = (product) => {
+    if (!product.images || product.images.length === 0) return '';
+    const mainImage = product.images.find((img) => img.main === true);
+    return mainImage ? mainImage.url : product.images[0]?.url;
+  };
+
+  // Helper to handle both ID or Object from wishlist API
+  const getProductId = (item) => {
+    if (typeof item.product === "object") return item.product.id;
+    return item.product;
+  };
 
   // Fetch Kids Products
   useEffect(() => {
@@ -23,7 +35,9 @@ export default function Kids() {
           params: { category: "KIDS" },
         });
 
-        setProducts(response.data);
+        // FILTER: Only show products that are active
+        const activeProducts = response.data.filter((p) => p.is_active);
+        setProducts(activeProducts);
       } catch (err) {
         console.error(err);
       } finally {
@@ -57,7 +71,7 @@ export default function Kids() {
     if (!user) return;
 
     const existingItem = wishlist.find(
-      (item) => item.product === product.id
+      (item) => getProductId(item) === product.id
     );
 
     try {
@@ -77,7 +91,6 @@ export default function Kids() {
     }
   };
 
-  // Wait for both auth + products
   if (loading || pageLoading) {
     return <p className="text-center mt-12">Loading...</p>;
   }
@@ -99,7 +112,7 @@ export default function Kids() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => {
             const isInWishlist = wishlist.some(
-              (item) => item.product === product.id
+              (item) => getProductId(item) === product.id
             );
 
             return (
@@ -112,7 +125,7 @@ export default function Kids() {
                   onClick={() => navigate(`/kids/${product.id}`)}
                 >
                   <img
-                    src={product.images[0]?.url}
+                    src={getProductDisplayImage(product)}
                     alt={product.name}
                     className="w-full object-contain group-hover:scale-105 transition-transform duration-500"
                   />
@@ -120,7 +133,7 @@ export default function Kids() {
 
                 <div className="p-2 flex items-center justify-between">
                   <div>
-                    <h2 className="text-xs uppercase">
+                    <h2 className="text-xs uppercase truncate max-w-[150px]">
                       {product.name}
                     </h2>
                     <p className="text-xs text-gray-800">
@@ -131,12 +144,12 @@ export default function Kids() {
                   <button
                     onClick={() => toggleWishlist(product)}
                     disabled={!user}
-                    className={`text-lg ${
+                    className={`text-lg transition-colors duration-300 ${
                       isInWishlist
                         ? "text-red-600"
                         : user
-                        ? "text-gray-400 hover:text-red-600"
-                        : "text-gray-400 cursor-not-allowed"
+                        ? "text-gray-300 hover:text-red-600"
+                        : "text-gray-200 cursor-not-allowed"
                     }`}
                   >
                     {isInWishlist ? <MdFavorite /> : <MdFavoriteBorder />}

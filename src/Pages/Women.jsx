@@ -17,8 +17,20 @@ export default function Women() {
   const [isSortHovered, setIsSortHovered] = useState(false);
 
   const { user, loading } = useContext(AuthContext);
-
   const navigate = useNavigate();
+
+  // Helper to find the correct image URL (Prioritizing 'main' flag)
+  const getProductDisplayImage = (product) => {
+    if (!product.images || product.images.length === 0) return '';
+    const mainImage = product.images.find((img) => img.main === true);
+    return mainImage ? mainImage.url : product.images[0]?.url;
+  };
+
+  // Helper to handle both ID or Object from wishlist API
+  const getProductId = (item) => {
+    if (typeof item.product === 'object') return item.product.id;
+    return item.product;
+  };
 
   // Fetch products
   useEffect(() => {
@@ -31,10 +43,13 @@ export default function Women() {
 
         const response = await API.get('/products/products/', { params });
 
-        setProducts(response.data);
+        // FILTER: Only show products that are active
+        const activeProducts = response.data.filter((p) => p.is_active);
+
+        setProducts(activeProducts);
 
         const uniqueTypes = [
-          ...new Set(response.data.map((p) => p.product_type)),
+          ...new Set(activeProducts.map((p) => p.product_type)),
         ].sort();
 
         setTypes(uniqueTypes);
@@ -74,7 +89,7 @@ export default function Women() {
     }
 
     const existingItem = wishlist.find(
-      (item) => item.product === product.id
+      (item) => getProductId(item) === product.id
     );
 
     try {
@@ -97,7 +112,6 @@ export default function Women() {
     }
   };
 
-  // Wait for both auth check + page fetch
   if (loading || pageLoading) {
     return <p className='text-center mt-12'>Loading...</p>;
   }
@@ -189,7 +203,7 @@ export default function Women() {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {displayedProducts.map((product) => {
             const isInWishlist = wishlist.some(
-              (item) => item.product === product.id
+              (item) => getProductId(item) === product.id
             );
 
             return (
@@ -199,7 +213,7 @@ export default function Women() {
                   onClick={() => navigate(`/women/${product.id}`)}
                 >
                   <img
-                    src={product.images[0]?.url}
+                    src={getProductDisplayImage(product)}
                     alt={product.name}
                     className='w-full object-contain transition-transform duration-500 group-hover:scale-105'
                   />
