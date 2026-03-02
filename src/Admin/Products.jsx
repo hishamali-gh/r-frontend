@@ -29,8 +29,6 @@ export default function Products() {
 
     useEffect(() => { fetchProducts() }, [])
 
-    /* CREATE PRODUCT */
-
     const handleCreateProduct = async () => {
         if (!newProduct.name || !newProduct.price || !newProduct.product_type) return
 
@@ -48,8 +46,6 @@ export default function Products() {
         fetchProducts()
     }
 
-    /* UPDATE PRODUCT */
-
     const handleUpdateProduct = async () => {
         const payload = {
             ...editProduct,
@@ -65,14 +61,10 @@ export default function Products() {
         fetchProducts()
     }
 
-    /* DELETE PRODUCT */
-
     const handleDeleteProduct = async (id) => {
         await API.delete(`products/products/${id}/`)
         fetchProducts()
     }
-
-    /* TOGGLE ACTIVE */
 
     const toggleActive = async (product) => {
         await API.patch(`products/products/${product.id}/`, {
@@ -80,8 +72,6 @@ export default function Products() {
         })
         fetchProducts()
     }
-
-    /* IMAGE MANAGEMENT */
 
     const refreshImageProduct = async (productId) => {
         const res = await API.get('products/products/')
@@ -107,7 +97,6 @@ export default function Products() {
         refreshImageProduct(productId)
     }
 
-    // UPDATED: Now toggles between true and false
     const toggleImageStatus = async (productId, imageId, currentStatus) => {
         await API.patch(`products/products/${productId}/images/${imageId}/`, {
             main: !currentStatus
@@ -133,8 +122,6 @@ export default function Products() {
             <h1 className="text-6xl mb-10" style={{ fontFamily: 'Playfair Display' }}>
                 Products
             </h1>
-
-            {/* PRODUCT TABLE */}
 
             <table
                 className="w-full text-gray-800 border-collapse"
@@ -190,8 +177,6 @@ export default function Products() {
                     ))}
                 </tbody>
             </table>
-
-            {/* EDIT PRODUCT MODAL */}
 
             {editProduct && (
                 <div
@@ -262,8 +247,6 @@ export default function Products() {
                 </div>
             )}
 
-            {/* IMAGE MODAL */}
-
             {imageProduct && (
                 <div
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 flex justify-center items-start pt-24"
@@ -325,7 +308,6 @@ export default function Products() {
                                                         Edit
                                                     </button>
 
-                                                    {/* UPDATED BUTTON: Switches between Main and Secondary */}
                                                     <button
                                                         className={`transition ${img.main ? 'text-green-600 font-bold' : 'hover:text-black'}`}
                                                         onClick={() => toggleImageStatus(imageProduct.id, img.id, img.main)}
@@ -372,8 +354,6 @@ export default function Products() {
                     </div>
                 </div>
             )}
-
-            {/* CREATE PRODUCT SECTION */}
 
             <div className="mt-24" style={{ fontFamily: 'SUSE Mono' }}>
                 <p className="text-ss uppercase tracking-widest text-black mb-8">

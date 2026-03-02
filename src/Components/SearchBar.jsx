@@ -19,10 +19,8 @@ export default function SearchBar() {
     try {
       const res = await API.get(`/products/products/?search=${value}`);
       
-      // Handle both paginated and non-paginated responses
       const data = res.data.results || res.data;
 
-      // Only show items where is_active is true
       const activeSuggestions = data.filter((item) => item.is_active === true);
 
       setSuggestions(activeSuggestions);

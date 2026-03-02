@@ -19,20 +19,17 @@ export default function Women() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Helper to find the correct image URL (Prioritizing 'main' flag)
   const getProductDisplayImage = (product) => {
     if (!product.images || product.images.length === 0) return '';
     const mainImage = product.images.find((img) => img.main === true);
     return mainImage ? mainImage.url : product.images[0]?.url;
   };
 
-  // Helper to handle both ID or Object from wishlist API
   const getProductId = (item) => {
     if (typeof item.product === 'object') return item.product.id;
     return item.product;
   };
 
-  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -43,7 +40,6 @@ export default function Women() {
 
         const response = await API.get('/products/products/', { params });
 
-        // FILTER: Only show products that are active
         const activeProducts = response.data.filter((p) => p.is_active);
 
         setProducts(activeProducts);
@@ -63,7 +59,6 @@ export default function Women() {
     fetchProducts();
   }, [sortOrder]);
 
-  // Fetch wishlist only if user exists
   useEffect(() => {
     if (!user) {
       setWishlist([]);

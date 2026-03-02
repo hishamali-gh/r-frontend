@@ -14,20 +14,17 @@ export default function Kids() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Helper to find the correct image URL (Prioritizing 'main' flag)
   const getProductDisplayImage = (product) => {
     if (!product.images || product.images.length === 0) return '';
     const mainImage = product.images.find((img) => img.main === true);
     return mainImage ? mainImage.url : product.images[0]?.url;
   };
 
-  // Helper to handle both ID or Object from wishlist API
   const getProductId = (item) => {
     if (typeof item.product === "object") return item.product.id;
     return item.product;
   };
 
-  // Fetch Kids Products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -35,7 +32,6 @@ export default function Kids() {
           params: { category: "KIDS" },
         });
 
-        // FILTER: Only show products that are active
         const activeProducts = response.data.filter((p) => p.is_active);
         setProducts(activeProducts);
       } catch (err) {
@@ -48,7 +44,6 @@ export default function Kids() {
     fetchProducts();
   }, []);
 
-  // Fetch Wishlist only if logged in
   useEffect(() => {
     if (!user) {
       setWishlist([]);

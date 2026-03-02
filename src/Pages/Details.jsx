@@ -19,7 +19,6 @@ export default function Details() {
 
   const { user, loading } = useContext(AuthContext);
 
-  // Fetch product
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -36,7 +35,6 @@ export default function Details() {
     fetchProduct();
   }, [id]);
 
-  // Fetch wishlist + cart when user exists
   useEffect(() => {
     if (!user) {
       setWishlist([]);

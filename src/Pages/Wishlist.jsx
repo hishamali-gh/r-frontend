@@ -83,7 +83,6 @@ export default function Wishlist() {
                                     key={item.id}
                                     className="group flex flex-col"
                                 >
-                                    {/* Image */}
                                     <div className="relative overflow-hidden">
                                         {imageUrl ? (
                                             <img
@@ -107,7 +106,6 @@ export default function Wishlist() {
                                         </button>
                                     </div>
 
-                                    {/* Details */}
                                     <div className="mt-6 flex flex-col gap-2">
                                         <h2 className="text-lg font-semibold uppercase tracking-wide">
                                             {product.name}

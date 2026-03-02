@@ -33,7 +33,7 @@ export default function Profile() {
     const fetchCart = async () => {
       try {
         const response = await API.get("cart/cart/");
-        // Handling both array and object responses for safety
+
         const data = Array.isArray(response.data)
           ? response.data
           : Array.isArray(response.data?.items)
@@ -47,8 +47,6 @@ export default function Profile() {
 
     const fetchOrders = async () => {
       try {
-        // UPDATED: Now points to the root 'orders/' endpoint 
-        // which your Django view filters for the logged-in user
         const response = await API.get("orders/");
         setOrders(response.data || []);
       } catch (error) {
@@ -88,7 +86,6 @@ export default function Profile() {
           PROFILE
         </h2>
 
-        {/* User Info Section */}
         <div className="text-center mb-12">
           <p className="text-xl text-gray-800 mb-1" style={{ fontFamily: "SUSE Mono" }}>
             Name: {user.name}
@@ -98,7 +95,6 @@ export default function Profile() {
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-7xl text-center">
           <Link to="/cart" className="w-full">
             <button
@@ -119,7 +115,6 @@ export default function Profile() {
           </Link>
         </div>
 
-        {/* Orders Section */}
         <div className="w-full max-w-4xl mt-16">
           <h3
             className="text-2xl mb-8 text-gray-900 font-semibold border-b border-gray-100 pb-2"
@@ -152,7 +147,6 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  {/* Order Items List */}
                   <div className="mt-4 space-y-4">
                     {order.items.map((item) => (
                       <div
@@ -184,7 +178,6 @@ export default function Profile() {
                     ))}
                   </div>
 
-                  {/* Order Footer */}
                   <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
                     <p className="text-xs text-gray-400 font-mono uppercase">
                       Placed on: {new Date(order.created_at).toLocaleDateString()}

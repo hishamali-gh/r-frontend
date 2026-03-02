@@ -21,7 +21,6 @@ export default function NavBar() {
         <>
             <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-transparent z-30'>
 
-                {/* Left: Hamburger */}
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
                     className='hover:text-gray-500 transition text-xl cursor-pointer'
@@ -29,7 +28,6 @@ export default function NavBar() {
                     <RxHamburgerMenu />
                 </button>
 
-                {/* Right: Login/Profile + Cart */}
                 <div
                     className='flex items-center space-x-8'
                     style={{ fontFamily: 'SUSE Mono' }}
@@ -65,7 +63,6 @@ export default function NavBar() {
                 </div>
             </nav>
 
-            {/* Overlay */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
                     menuOpen
@@ -75,7 +72,6 @@ export default function NavBar() {
                 onClick={() => setMenuOpen(false)}
             ></div>
 
-            {/* Side Menu */}
             <div
                 className={`fixed top-0 left-0 h-full w-64 bg-white/50 backdrop-blur-md border-r border-white/40 transform transition-transform duration-300 ease-in-out z-50 ${
                     menuOpen ? 'translate-x-0' : '-translate-x-full'

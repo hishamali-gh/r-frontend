@@ -28,7 +28,6 @@ export default function Home() {
       <header className="mt-8">
         <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col items-center">
 
-          {/* First Image */}
           <div className="mb-16">
             <img
               src="https://static.zara.net/assets/public/6e2b/b20f/7d534a25bbb9/1ac8b24b9d1d/image-web-f0860561-5d53-4ea9-8d9f-f8056b65fe78-default/image-web-f0860561-5d53-4ea9-8d9f-f8056b65fe78-default.jpg?ts=1753711361952&w=1634"
@@ -36,7 +35,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Second Image */}
           <div className="mb-12">
             <img
               src="https://static.zara.net/assets/public/c16b/55ea/d96f49e8bce1/e8cb842f029e/08946839612-a2/08946839612-a2.jpg?ts=1759743706257&w=1663"
@@ -44,7 +42,6 @@ export default function Home() {
             />
           </div>
 
-          {/* New Arrivals */}
           <div className="w-full mb-12">
             <div className="flex gap-6 overflow-x-auto scrollbar-hide py-4">
               {newArrivals.map((product) => (
@@ -63,7 +60,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Third Image (Red Bomber) */}
           <div className="mb-12">
             <img
               src="https://static.zara.net/assets/public/ec46/47d2/68804bd1bcc4/5927b3fb2369/aw25-north-man-jackets-subhome-xmedia-40-puffer-landscape_0/poster/poster.jpg?ts=1759436504232"
@@ -71,7 +67,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Fourth Image (Pulled Up Slightly) */}
           <div className="-mt-16">
             <img
               src="https://static.zara.net/assets/public/4680/36fe/ed7744e08659/21b19d75fda4/08833062505-1-p/08833062505-1-p.jpg?ts=1759489048055&w=1753"

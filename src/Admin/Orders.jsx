@@ -45,7 +45,7 @@ export default function Orders() {
         <div className="space-y-24">
           {orders.map((order) => (
             <div key={order.id} className="border-t border-black pt-8">
-              {/* ORDER HEADER */}
+
               <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
                 <div style={{ fontFamily: "SUSE Mono" }}>
                   <h3 className="text-xl font-bold uppercase tracking-tighter">
@@ -75,7 +75,6 @@ export default function Orders() {
                 </div>
               </div>
 
-              {/* ORDER ITEMS */}
               <div className="space-y-4">
                 {order.items.map((item) => (
                   <div
@@ -107,7 +106,6 @@ export default function Orders() {
                 ))}
               </div>
 
-              {/* ORDER FOOTER */}
               <div className="flex justify-end mt-4">
                 <p className="text-lg font-bold uppercase" style={{ fontFamily: "SUSE Mono" }}>
                   Total: ₹{order.total_price}

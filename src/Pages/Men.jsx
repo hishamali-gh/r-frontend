@@ -19,14 +19,12 @@ export default function Men() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Helper to find the correct image URL
   const getProductDisplayImage = (product) => {
     if (!product.images || product.images.length === 0) return '';
     const mainImage = product.images.find((img) => img.main);
     return mainImage ? mainImage.url : product.images[0]?.url;
   };
 
-  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -37,7 +35,6 @@ export default function Men() {
 
         const response = await API.get('/products/products/', { params });
 
-        // FILTER: Only keep products where is_active is truthy
         const activeProducts = response.data.filter((p) => p.is_active);
 
         setProducts(activeProducts);
@@ -57,7 +54,6 @@ export default function Men() {
     fetchProducts();
   }, [sortOrder]);
 
-  // Fetch wishlist only if user exists
   useEffect(() => {
     if (!user) {
       setWishlist([]);
