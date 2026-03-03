@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import API from '../api.jsx';
+import registrationSchema from '../SignupValidation.jsx';
 import '../index.css';
 
 export default function SignUp() {
@@ -24,17 +25,29 @@ export default function SignUp() {
 
     const handleSubmit = async function (e) {
         e.preventDefault();
-
         setErrors({});
 
-        try {
-            const res = await API.post('acc/register/', {
-                name: name,
-                username: username,
-                email: email,
-                password: password,
-                confirm_password: confirmPassword
+        const formData = {
+            name,
+            username,
+            email,
+            password,
+            confirm_password: confirmPassword
+        };
+
+        const { error } = registrationSchema.validate(formData, { abortEarly: false });
+
+        if (error) {
+            const joiErrors = {};
+            error.details.forEach((item) => {
+                joiErrors[item.path[0]] = [item.message];
             });
+            setErrors(joiErrors);
+            return;
+        }
+
+        try {
+            const res = await API.post('acc/register/', formData);
 
             localStorage.setItem('access', res.data.access);
             localStorage.setItem('refresh', res.data.refresh);
@@ -47,8 +60,7 @@ export default function SignUp() {
             setConfirmPassword('');
 
             navigate('/');
-        }
-        
+        } 
         catch (err) {
             if (err.response?.data) {
                 const backendErrors = err.response.data;
@@ -67,7 +79,6 @@ export default function SignUp() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white relative px-4 overflow-hidden">
-
             <h1
                 className="absolute top-0 left-0 text-gray-900 opacity-5 select-none pointer-events-none"
                 style={{
