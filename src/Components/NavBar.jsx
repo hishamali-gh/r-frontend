@@ -19,14 +19,21 @@ export default function NavBar() {
 
     return (
         <>
-            <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-transparent z-30'>
+            <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-white/70 backdrop-blur-md border-b border-gray-300/40 z-30'>
 
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className='hover:text-gray-500 transition text-xl cursor-pointer'
+                    className='text-m tracking-wide hover:text-gray-500 transition cursor-pointer'
                 >
                     <RxHamburgerMenu />
                 </button>
+
+                <Link 
+                to="/" 
+                style={{ fontFamily: "'Bodoni Moda', serif" }}
+                >
+                Heart, Gold
+                </Link>
 
                 <div
                     className='flex items-center space-x-8'
@@ -36,14 +43,14 @@ export default function NavBar() {
                         <li>
                             {user ? (
                                 <Link
-                                    className='hover:text-gray-500 transition cursor-pointer'
+                                    className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
                                     to='/profile'
                                 >
                                     PROFILE
                                 </Link>
                             ) : (
                                 <Link
-                                    className='hover:text-gray-500 transition cursor-pointer'
+                                    className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
                                     to='/login'
                                 >
                                     LOGIN
@@ -53,7 +60,7 @@ export default function NavBar() {
 
                         <li>
                             <Link
-                                className='hover:text-gray-500 transition cursor-pointer'
+                                className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
                                 to='/cart'
                             >
                                 CART
