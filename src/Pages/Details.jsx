@@ -59,6 +59,26 @@ export default function Details() {
     fetchData();
   }, [user]);
 
+  const variants = product?.variants || [];
+
+  const selectedVariant = variants.find(
+    (v) => v.size.value === selectedSize
+  );
+
+  const getDisplayPrice = () => {
+    if (selectedVariant) {
+      return selectedVariant.price || product.price;
+    }
+
+    const available = variants.filter((v) => v.stock > 0);
+
+    if (!available.length) return product.price;
+
+    return Math.min(
+      ...available.map((v) => v.price || product.price)
+    );
+  };
+
   const isInWishlist = wishlist.some(
     (item) => item.product === product?.id
   );
@@ -113,6 +133,11 @@ export default function Details() {
       return;
     }
 
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      toast.error("Selected size is out of stock");
+      return;
+    }
+
     try {
       if (isInCart) {
         const item = cartItems.find(
@@ -131,7 +156,7 @@ export default function Details() {
       } else {
         const res = await API.post("cart/cart/", {
           product: product.id,
-          size: selectedSize,
+          size: selectedVariant.size.value,
           quantity: 1,
         });
 
@@ -147,8 +172,6 @@ export default function Details() {
   if (loading || pageLoading || !product) {
     return <p className="text-center mt-20">Loading...</p>;
   }
-
-  const sizes = ["XS", "S", "M", "L", "XL"];
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -178,31 +201,42 @@ export default function Details() {
             {product.description || "No description available."}
           </p>
 
+          {/* ✅ Dynamic Sizes */}
           <div className="flex space-x-2 mt-2">
-            {sizes.map((size) => (
-              <span
-                key={size}
-                onClick={() =>
-                  setSelectedSize(
-                    selectedSize === size ? null : size
-                  )
-                }
-                className={`px-3 py-1 border cursor-pointer transition ${
-                  selectedSize === size
-                    ? "bg-gray-800 text-white"
-                    : "border-gray-400 hover:bg-gray-200"
-                }`}
-              >
-                {size}
-              </span>
-            ))}
+            {variants.map((v) => {
+              const isOutOfStock = v.stock === 0;
+
+              return (
+                <span
+                  key={v.id}
+                  onClick={() => {
+                    if (isOutOfStock) return;
+                    setSelectedSize(
+                      selectedSize === v.size.value
+                        ? null
+                        : v.size.value
+                    );
+                  }}
+                  className={`px-3 py-1 border transition ${
+                    isOutOfStock
+                      ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                      : selectedSize === v.size.value
+                      ? "bg-gray-800 text-white cursor-pointer"
+                      : "border-gray-400 hover:bg-gray-200 cursor-pointer"
+                  }`}
+                >
+                  {v.size.value}
+                </span>
+              );
+            })}
           </div>
 
+          {/* ✅ Dynamic Price */}
           <p
             className="text-gray-900 text-xl font-semibold mt-2"
             style={{ fontFamily: "SUSE Mono" }}
           >
-            ₹ {product.price}
+            ₹ {Number(getDisplayPrice()).toFixed(2)}
           </p>
 
           <button

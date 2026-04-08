@@ -116,6 +116,22 @@ export default function Men() {
       ? products
       : products.filter((p) => p.product_type === selectedType);
 
+  const getDisplayPrice = (product) => {
+    if (!product.variants || product.variants.length === 0) {
+      return product.price;
+    }
+
+    const availableVariants = product.variants.filter(v => v.stock > 0);
+
+    if (availableVariants.length === 0) return product.price;
+
+    const prices = availableVariants.map(
+      v => v.price || product.price
+    );
+
+    return Math.min(...prices);
+  };
+
   return (
     <div className='min-h-screen flex flex-col bg-white'>
       <NavBar />
@@ -220,7 +236,7 @@ export default function Men() {
                       {product.name}
                     </h2>
                     <p className='text-xs text-gray-800 mt-1'>
-                      ₹ {product.price}
+                      ₹ {getDisplayPrice(product)}
                     </p>
                   </div>
 

@@ -15,19 +15,25 @@ export default function Products() {
 
     const [newProduct, setNewProduct] = useState(emptyProduct)
     const [products, setProducts] = useState([])
-    const [editProduct, setEditProduct] = useState(null)
     const [imageProduct, setImageProduct] = useState(null)
+
+    const [variantProduct, setVariantProduct] = useState(null)
 
     const [newImageUrl, setNewImageUrl] = useState('')
     const [editingImageId, setEditingImageId] = useState(null)
     const [editingUrl, setEditingUrl] = useState('')
+
+    const [productTypes, setProductTypes] = useState([])
 
     const fetchProducts = async () => {
         const res = await API.get('products/products/')
         setProducts(res.data)
     }
 
-    useEffect(() => { fetchProducts() }, [])
+    useEffect(() => {
+        fetchProducts()
+        fetchProductTypes()
+    }, [])
 
     const handleCreateProduct = async () => {
         if (!newProduct.name || !newProduct.price || !newProduct.product_type) return
@@ -46,21 +52,6 @@ export default function Products() {
         fetchProducts()
     }
 
-    const handleUpdateProduct = async () => {
-        const payload = {
-            ...editProduct,
-            price: parseFloat(editProduct.price),
-            product_type: editProduct.product_type
-        }
-
-        delete payload.image
-
-        await API.patch(`products/products/${editProduct.id}/`, payload)
-
-        setEditProduct(null)
-        fetchProducts()
-    }
-
     const handleDeleteProduct = async (id) => {
         await API.delete(`products/products/${id}/`)
         fetchProducts()
@@ -69,6 +60,27 @@ export default function Products() {
     const toggleActive = async (product) => {
         await API.patch(`products/products/${product.id}/`, {
             is_active: !product.is_active
+        })
+        fetchProducts()
+    }
+
+    const updateStock = async (variantId, stock) => {
+        await API.patch(`products/product-variants/${variantId}/`, {
+            stock: parseInt(stock) || 0
+        })
+
+        fetchProducts()
+        setVariantProduct(prev => ({
+            ...prev,
+            variants: prev.variants.map(v =>
+                v.id === variantId ? { ...v, stock } : v
+            )
+        }))
+    }
+
+    const updateVariantPrice = async (variantId, price) => {
+        await API.patch(`products/product-variants/${variantId}/`, {
+            price: price ? parseFloat(price) : null
         })
         fetchProducts()
     }
@@ -116,6 +128,18 @@ export default function Products() {
         refreshImageProduct(productId)
     }
 
+    const updateProductField = async (id, field, value) => {
+        await API.patch(`products/products/${id}/`, {
+            [field]: value
+        })
+        fetchProducts()
+    }
+
+    const fetchProductTypes = async () => {
+        const res = await API.get('products/product-types/')
+        setProductTypes(res.data)
+    }
+
     return (
         <div>
 
@@ -132,32 +156,92 @@ export default function Products() {
                         <th className="py-3 px-6">Name</th>
                         <th className="py-3 px-6">Category</th>
                         <th className="py-3 px-6">Type</th>
-                        <th className="py-3 px-6">Price</th>
                         <th className="py-3 px-6 w-32 text-center">Status</th>
                         <th className="py-3 px-6"></th>
                         <th className="py-3 px-6"></th>
+                        <th className="py-3 px-6 text-right"></th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {products.map(p => (
                         <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td className="py-4 px-6">{p.name}</td>
-                            <td className="py-4 px-6">{p.category}</td>
-                            <td className="py-4 px-6">{p.product_type}</td>
-                            <td className="py-4 px-6">{p.price}</td>
+                            <td className="py-4 px-6">
+                                <input
+                                    value={p.name}
+                                    onChange={(e) => {
+                                        const newName = e.target.value
+                                        setProducts(prev =>
+                                            prev.map(prod =>
+                                                prod.id === p.id ? { ...prod, name: newName } : prod
+                                            )
+                                        )
+                                    }}
+                                    onBlur={(e) => updateProductField(p.id, 'name', e.target.value)}
+                                    className="w-full border-b outline-none bg-transparent"
+                                />
+                            </td>
+                            <td className="py-4 px-6">
+                                <select
+                                    value={p.category}
+                                    onChange={(e) => {
+                                        const value = e.target.value
 
+                                        setProducts(prev =>
+                                            prev.map(prod =>
+                                                prod.id === p.id ? { ...prod, category: value } : prod
+                                            )
+                                        )
+
+                                        updateProductField(p.id, 'category', value)
+                                    }}
+                                    className="bg-transparent outline-none"
+                                >
+                                    <option value="MEN">MEN</option>
+                                    <option value="WOMEN">WOMEN</option>
+                                    <option value="KIDS">KIDS</option>
+                                </select>
+                            </td>
+                            <td className="py-4 px-6">
+                                <select
+                                    value={p.product_type}
+                                    onChange={(e) => {
+                                        const value = e.target.value
+
+                                        setProducts(prev =>
+                                            prev.map(prod =>
+                                                prod.id === p.id ? { ...prod, product_type: value } : prod
+                                            )
+                                        )
+
+                                        updateProductField(p.id, 'product_type', value)
+                                    }}
+                                    className="bg-transparent outline-none"
+                                >
+                                    {productTypes.map(type => (
+                                        <option key={type.id} value={type.name}>
+                                            {type.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </td>
                             <td className="py-4 px-6 w-32 text-center">
                                 <button
                                     onClick={() => toggleActive(p)}
-                                    className={`w-20 text-xs uppercase tracking-wide transition ${
-                                        p.is_active
-                                            ? 'text-green-600 hover:text-green-800'
-                                            : 'text-gray-400 hover:text-black'
-                                    }`}
+                                    className={`w-20 text-xs uppercase tracking-wide transition ${p.is_active
+                                        ? 'text-green-600 hover:text-green-800'
+                                        : 'text-gray-400 hover:text-black'
+                                        }`}
                                 >
                                     {p.is_active ? 'Active' : 'Inactive'}
                                 </button>
+                            </td>
+
+                            <td
+                                className="py-4 px-6 cursor-pointer text-sm text-gray-500 hover:text-black"
+                                onClick={() => setVariantProduct(p)}
+                            >
+                                Variants
                             </td>
 
                             <td
@@ -166,22 +250,26 @@ export default function Products() {
                             >
                                 Images
                             </td>
-
-                            <td
-                                className="py-4 px-6 cursor-pointer text-sm text-gray-500 hover:text-black"
-                                onClick={() => setEditProduct(p)}
-                            >
-                                Edit
+                            <td className="py-4 px-6 text-right">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteProduct(p.id)
+                                    }}
+                                    className="text-gray-400 hover:text-red-600 transition text-lg"
+                                >
+                                    ✕
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
-            {editProduct && (
+            {variantProduct && (
                 <div
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 flex justify-center items-start pt-24"
-                    onClick={() => setEditProduct(null)}
+                    onClick={() => setVariantProduct(null)}
                 >
                     <div
                         className="bg-white w-full max-w-xl p-10 shadow-2xl relative"
@@ -190,58 +278,66 @@ export default function Products() {
                     >
                         <button
                             className="absolute top-6 right-6 text-gray-400 hover:text-black"
-                            onClick={() => setEditProduct(null)}
+                            onClick={() => setVariantProduct(null)}
                         >
                             ✕
                         </button>
 
                         <h2 className="text-3xl mb-8" style={{ fontFamily: 'Playfair Display' }}>
-                            Edit Product
+                            Variant Configuration
                         </h2>
 
                         <div className="space-y-6">
-                            <input value={editProduct.name}
-                                onChange={(e)=>setEditProduct({...editProduct, name:e.target.value})}
-                                className="w-full border-b outline-none" />
+                            {variantProduct.variants?.map(v => (
+                                <div key={v.id} className="flex justify-between items-center gap-6">
+                                    <span>{v.size.value}</span>
 
-                            <input value={editProduct.category}
-                                onChange={(e)=>setEditProduct({...editProduct, category:e.target.value})}
-                                className="w-full border-b outline-none" />
+                                    <input
+                                        type="number"
+                                        value={v.stock}
+                                        onChange={(e) => {
+                                            const newStock = e.target.value
 
-                            <input value={editProduct.product_type}
-                                onChange={(e)=>setEditProduct({...editProduct, product_type:e.target.value})}
-                                className="w-full border-b outline-none" />
+                                            setVariantProduct(prev => ({
+                                                ...prev,
+                                                variants: prev.variants.map(variant =>
+                                                    variant.id === v.id
+                                                        ? { ...variant, stock: newStock }
+                                                        : variant
+                                                )
+                                            }))
+                                        }}
+                                        onBlur={(e) =>
+                                            updateStock(v.id, e.target.value)
+                                        }
+                                        className="w-24 border-b outline-none text-right"
+                                    />
 
-                            <input type="number" step="0.01"
-                                value={editProduct.price}
-                                onChange={(e)=>setEditProduct({...editProduct, price:e.target.value})}
-                                className="w-full border-b outline-none" />
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={v.price || ''}
+                                        onChange={(e) => {
+                                            const newPrice = e.target.value
 
-                            <textarea
-                                value={editProduct.description}
-                                onChange={(e)=>setEditProduct({...editProduct, description:e.target.value})}
-                                className="w-full border-b outline-none resize-none"
-                                rows="3"
-                            />
-                        </div>
+                                            setVariantProduct(prev => ({
+                                                ...prev,
+                                                variants: prev.variants.map(variant =>
+                                                    variant.id === v.id
+                                                        ? { ...variant, price: newPrice }
+                                                        : variant
+                                                )
+                                            }))
+                                        }}
+                                        onBlur={(e) =>
+                                            updateVariantPrice(v.id, e.target.value)
+                                        }
+                                        className="w-24 border-b outline-none text-right"
+                                        placeholder="Price"
+                                    />
 
-                        <div className="mt-10 flex justify-between items-center">
-                            <button
-                                className="text-xs uppercase tracking-wide text-gray-600 hover:text-black"
-                                onClick={handleUpdateProduct}
-                            >
-                                Save Changes
-                            </button>
-
-                            <button
-                                className="text-xs uppercase tracking-wide text-red-500 hover:text-red-700"
-                                onClick={async () => {
-                                    await handleDeleteProduct(editProduct.id)
-                                    setEditProduct(null)
-                                }}
-                            >
-                                Delete Product
-                            </button>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -280,12 +376,12 @@ export default function Products() {
                                             <div className="flex gap-6 items-center">
                                                 <input
                                                     value={editingUrl}
-                                                    onChange={(e)=>setEditingUrl(e.target.value)}
+                                                    onChange={(e) => setEditingUrl(e.target.value)}
                                                     className="flex-1 border-b outline-none"
                                                 />
                                                 <button
                                                     className="text-sm text-black hover:underline"
-                                                    onClick={()=>handleEditImage(imageProduct.id,img.id, editingUrl)}
+                                                    onClick={() => handleEditImage(imageProduct.id, img.id, editingUrl)}
                                                 >
                                                     Save
                                                 </button>
@@ -300,7 +396,7 @@ export default function Products() {
 
                                                     <button
                                                         className="hover:text-black"
-                                                        onClick={()=>{
+                                                        onClick={() => {
                                                             setEditingImageId(img.id)
                                                             setEditingUrl(img.url)
                                                         }}
@@ -317,7 +413,7 @@ export default function Products() {
 
                                                     <button
                                                         className="hover:text-red-600"
-                                                        onClick={()=>handleDeleteImage(imageProduct.id,img.id)}
+                                                        onClick={() => handleDeleteImage(imageProduct.id, img.id)}
                                                     >
                                                         Delete
                                                     </button>
@@ -339,13 +435,13 @@ export default function Products() {
                             <input
                                 placeholder="Image URL"
                                 value={newImageUrl}
-                                onChange={(e)=>setNewImageUrl(e.target.value)}
+                                onChange={(e) => setNewImageUrl(e.target.value)}
                                 className="w-full border-b outline-none"
                             />
 
                             <button
                                 className="mt-6 text-xs uppercase tracking-wide text-gray-600 hover:text-black"
-                                onClick={()=>handleAddImage(imageProduct.id)}
+                                onClick={() => handleAddImage(imageProduct.id)}
                             >
                                 Add Image
                             </button>
@@ -363,36 +459,52 @@ export default function Products() {
                 <div className="grid grid-cols-2 gap-10">
                     <input placeholder="Name"
                         value={newProduct.name}
-                        onChange={(e)=>setNewProduct({...newProduct, name:e.target.value})}
+                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                         className="border-b outline-none" />
 
-                    <input placeholder="Category"
+                    <select
                         value={newProduct.category}
-                        onChange={(e)=>setNewProduct({...newProduct, category:e.target.value})}
-                        className="border-b outline-none" />
+                        onChange={(e) =>
+                            setNewProduct({ ...newProduct, category: e.target.value })
+                        }
+                        className="border-b outline-none bg-transparent"
+                    >
+                        <option value="">Select Category</option>
+                        <option value="MEN">MEN</option>
+                        <option value="WOMEN">WOMEN</option>
+                        <option value="KIDS">KIDS</option>
+                    </select>
 
-                    <input placeholder="Type"
+                    <select
                         value={newProduct.product_type}
                         onChange={(e)=>setNewProduct({...newProduct, product_type:e.target.value})}
-                        className="border-b outline-none" />
+                        className="border-b outline-none bg-transparent"
+                    >
+                        <option value="">Select Type</option>
+                        {productTypes.map(type => (
+                            <option key={type.id} value={type.name}>
+                                {type.name}
+                            </option>
+                        ))}
+                    </select>
 
                     <input type="number" step="0.01"
                         placeholder="Price"
                         value={newProduct.price}
-                        onChange={(e)=>setNewProduct({...newProduct, price:e.target.value})}
+                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                         className="border-b outline-none" />
 
                     <input
                         placeholder="Initial Image URL (optional)"
                         value={newProduct.image}
-                        onChange={(e)=>setNewProduct({...newProduct, image:e.target.value})}
+                        onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
                         className="col-span-2 border-b outline-none"
                     />
 
                     <textarea
                         placeholder="Description"
                         value={newProduct.description}
-                        onChange={(e)=>setNewProduct({...newProduct, description:e.target.value})}
+                        onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                         className="col-span-2 border-b outline-none resize-none"
                         rows="3"
                     />
