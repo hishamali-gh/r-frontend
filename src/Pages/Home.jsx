@@ -2,128 +2,85 @@ import { Link } from "react-router-dom";
 import "../index.css";
 import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
+import Sidebar from "../Components/Sidebar";
 import { useEffect, useState } from "react";
-import API from '../api.jsx'
+import API from '../api.jsx';
 
 export default function Home() {
-  const [newArrivals, setNewArrivals] = useState([]);
+  const [menProducts, setMenProducts] = useState([]);
+  const [womenProducts, setWomenProducts] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await API.get("products/products/");
-        setNewArrivals(response.data.slice(0, 7));
+        const { data } = await API.get("products/products/");
+        setMenProducts(data.filter(p => p.category === "MEN").slice(0, 7));
+        setWomenProducts(data.filter(p => p.category === "WOMEN").slice(0, 7));
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error(error);
       }
     };
-
     fetchProducts();
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <NavBar />
+      <style>
+        {`
+          html, body, .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+          html::-webkit-scrollbar, body::-webkit-scrollbar, .scrollbar-hide::-webkit-scrollbar { display: none; }
+        `}
+      </style>
 
-      <header className="mt-8">
-        <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col items-center">
+      <NavBar toggle={() => setMenuOpen(!menuOpen)} menuOpen={menuOpen} />
 
-          <div className="mb-16">
-            <img
-              src="https://static.zara.net/assets/public/6e2b/b20f/7d534a25bbb9/1ac8b24b9d1d/image-web-f0860561-5d53-4ea9-8d9f-f8056b65fe78-default/image-web-f0860561-5d53-4ea9-8d9f-f8056b65fe78-default.jpg?ts=1753711361952&w=1634"
-              alt="Fashion Banner"
+      <div className={`fixed top-12 left-0 h-[calc(100vh-4rem)] w-64 bg-white/50 backdrop-blur-md border-r border-gray-300/40 z-40 transform transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <Sidebar />
+      </div>
+
+      <div className={`transition-all pt-1 duration-300 flex-grow ${menuOpen ? "ml-64" : "ml-0"}`}>
+        <main className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 pt-32">
+          
+          <section className="pb-36">
+            <img 
+              src="https://static.zara.net/assets/public/4d70/4bac/a2a944839320/8f94ab005430/image-landscape-fill-cc5cf47c-f3e3-4a6f-a845-6ba6cc446bdc-default_0/image-landscape-fill-cc5cf47c-f3e3-4a6f-a845-6ba6cc446bdc-default_0.jpg?ts=1775474287637&w=1920" 
+              className="w-full h-auto object-cover" alt="Hero"
             />
-          </div>
+          </section>
 
-          <div className="mb-12">
-            <img
-              src="https://static.zara.net/assets/public/c16b/55ea/d96f49e8bce1/e8cb842f029e/08946839612-a2/08946839612-a2.jpg?ts=1759743706257&w=1663"
-              alt="Fashion Banner"
-            />
-          </div>
-
-          <div className="w-full mb-12">
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide py-4">
-              {newArrivals.map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/products/${product.id}`}
-                  className="flex-shrink-0 w-80 hover:scale-105 transition-transform duration-300"
-                >
-                  <img
-                    src={product.images?.[0]?.url}
-                    alt={product.name}
-                    className="w-full h-96 object-cover"
-                  />
+          <section className="pb-36">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide">
+              {menProducts.map((p) => (
+                <Link key={p.id} to={`/products/${p.id}`} className="flex-shrink-0">
+                  <img src={p.images?.[0]?.url} className="w-64 md:w-80 h-[450px] object-cover" alt={p.name} />
                 </Link>
               ))}
+              <div className="w-6 flex-shrink-0" />
             </div>
-          </div>
+          </section>
 
-          <div className="mb-12">
-            <img
-              src="https://static.zara.net/assets/public/ec46/47d2/68804bd1bcc4/5927b3fb2369/aw25-north-man-jackets-subhome-xmedia-40-puffer-landscape_0/poster/poster.jpg?ts=1759436504232"
-              alt="Fashion Banner"
-            />
-          </div>
+          <section className="pb-36 grid grid-cols-2 gap-6 lg:gap-10">
+            <img src="https://static.zara.net/assets/public/779e/efd9/6b05420b9228/b72425909b8d/03920171710-a5/03920171710-a5.jpg?ts=1775552278166&w=743" className="w-full aspect-[3/4] object-cover" alt="Feature 1" />
+            <img src="https://static.zara.net/assets/public/bd92/9cf9/f0504466b097/8adf508168c8/03920171710-p/03920171710-p.jpg?ts=1775552278236&w=743" className="w-full aspect-[3/4] object-cover" alt="Feature 2" />
+          </section>
 
-          <div className="-mt-16">
-            <img
-              src="https://static.zara.net/assets/public/4680/36fe/ed7744e08659/21b19d75fda4/08833062505-1-p/08833062505-1-p.jpg?ts=1759489048055&w=1753"
-              alt="Fashion Banner"
-            />
-          </div>
+          <section className="pb-10">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide">
+              {womenProducts.map((p) => (
+                <Link key={p.id} to={`/products/${p.id}`} className="flex-shrink-0">
+                  <img src={p.images?.[0]?.url} className="w-64 md:w-80 h-[450px] object-cover" alt={p.name} />
+                </Link>
+              ))}
+              <div className="w-6 flex-shrink-0" />
+            </div>
+          </section>
+        </main>
+      </div>
 
-        </div>
-      </header>
-
-      <section className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3
-            className="text-3xl text-center text-gray-800 mb-10 uppercase"
-            style={{ fontFamily: "Playfair Display" }}
-          >
-            Shop by Category
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {[
-              {
-                link: "/men",
-                img: "https://static.zara.net/assets/public/0adb/fa31/b6e54d87b5eb/5b36638e6524/04024159807-p/04024159807-p.jpg?ts=1751011686714&w=710",
-                label: "MEN",
-              },
-              {
-                link: "/women",
-                img: "https://static.zara.net/assets/public/fade/d164/e3134f179992/f91e510d3dea/08851450050-p/08851450050-p.jpg?ts=1756997867718&w=710",
-                label: "WOMEN",
-              },
-              {
-                link: "/kids",
-                img: "https://static.zara.net/assets/public/e1cd/ba96/8b904cb58a4c/ba578985d43f/01473587712500-p/01473587712500-p.jpg?ts=1758192089017&w=710",
-                label: "KIDS",
-              },
-            ].map((cat) => (
-              <Link
-                key={cat.label}
-                to={cat.link}
-                className="relative group overflow-hidden cursor-pointer"
-              >
-                <img
-                  src={cat.img}
-                  alt={`${cat.label} Fashion`}
-                  className="w-full object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-105"
-                />
-                <h4 className="absolute bottom-4 left-4 text-xl font-bold text-white">
-                  {cat.label}
-                </h4>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Footer />
+      <div className="">
+        <Footer />
+      </div>
     </div>
   );
 }

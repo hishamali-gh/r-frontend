@@ -143,45 +143,45 @@ export default function Products() {
     return (
         <div>
 
-            <h1 className="text-6xl mb-10" style={{ fontFamily: 'Playfair Display' }}>
+            <h1 className="text-5xl mb-16" style={{ fontFamily: 'Playfair Display' }}>
                 Products
             </h1>
 
             <table
-                className="w-full text-gray-800 border-collapse"
+                className="w-full text-gray-800 border-collapse text-sm mt-4"
                 style={{ fontFamily: 'SUSE Mono' }}
             >
                 <thead>
-                    <tr className="border-b border-gray-200 text-gray-600 text-sm uppercase text-left">
-                        <th className="py-3 px-6">Name</th>
-                        <th className="py-3 px-6">Category</th>
-                        <th className="py-3 px-6">Type</th>
-                        <th className="py-3 px-6 w-32 text-center">Status</th>
-                        <th className="py-3 px-6"></th>
-                        <th className="py-3 px-6"></th>
-                        <th className="py-3 px-6 text-right"></th>
+                    <tr className="border-b border-gray-200 text-sm uppercase text-center">
+                        <th className="py-3 px-6 w-[30%]">Name</th>
+                        <th className="py-3 px-6 w-[15%]">Category</th>
+                        <th className="py-3 px-6 w-[20%]">Type</th>
+                        <th className="py-3 px-6 w-[12%] text-center">Status</th>
+                        <th className="py-3 px-6 w-[8%]"></th>
+                        <th className="py-3 px-6 w-[8%]"></th>
+                        <th className="py-3 px-6 w-[7%] text-right"></th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {products.map(p => (
                         <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td className="py-4 px-6">
-                                <input
-                                    value={p.name}
-                                    onChange={(e) => {
-                                        const newName = e.target.value
-                                        setProducts(prev =>
-                                            prev.map(prod =>
-                                                prod.id === p.id ? { ...prod, name: newName } : prod
-                                            )
+                            <td className="py-4 px-6 text-center">
+                            <input
+                                value={p.name}
+                                onChange={(e) => {
+                                    const newName = e.target.value
+                                    setProducts(prev =>
+                                        prev.map(prod =>
+                                            prod.id === p.id ? { ...prod, name: newName } : prod
                                         )
-                                    }}
-                                    onBlur={(e) => updateProductField(p.id, 'name', e.target.value)}
-                                    className="w-full border-b outline-none bg-transparent"
-                                />
+                                    )
+                                }}
+                                onBlur={(e) => updateProductField(p.id, 'name', e.target.value)}
+                                className="w-full outline-none bg-transparent truncate text-sm text-center text-gray-700 hover:text-gray-950 transition-colors duration-200 cursor-pointer border-b border-transparent focus:border-gray-300"
+                            />
                             </td>
-                            <td className="py-4 px-6">
+                            <td className="py-4 px-6 text-center">
                                 <select
                                     value={p.category}
                                     onChange={(e) => {
@@ -195,14 +195,15 @@ export default function Products() {
 
                                         updateProductField(p.id, 'category', value)
                                     }}
-                                    className="bg-transparent outline-none"
+                                    className="bg-transparent outline-none text-sm text-gray-700 appearance-none text-center hover:text-gray-950 transition-colors duration-200 cursor-pointer"
+                                    style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                                 >
-                                    <option value="MEN">MEN</option>
-                                    <option value="WOMEN">WOMEN</option>
-                                    <option value="KIDS">KIDS</option>
+                                    <option value="MEN">Men</option>
+                                    <option value="WOMEN">Women</option>
+                                    <option value="KIDS">Kids</option>
                                 </select>
                             </td>
-                            <td className="py-4 px-6">
+                            <td className="py-4 px-6 text-center">
                                 <select
                                     value={p.product_type}
                                     onChange={(e) => {
@@ -216,7 +217,8 @@ export default function Products() {
 
                                         updateProductField(p.id, 'product_type', value)
                                     }}
-                                    className="bg-transparent outline-none"
+                                    className="bg-transparent outline-none text-sm text-gray-700 appearance-none text-center hover:text-gray-950 transition-colors duration-200 cursor-pointer"
+                                    style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                                 >
                                     {productTypes.map(type => (
                                         <option key={type.id} value={type.name}>
@@ -225,38 +227,44 @@ export default function Products() {
                                     ))}
                                 </select>
                             </td>
-                            <td className="py-4 px-6 w-32 text-center">
+                            <td className="py-4 px-8 w-32 text-center">
                                 <button
                                     onClick={() => toggleActive(p)}
-                                    className={`w-20 text-xs uppercase tracking-wide transition ${p.is_active
-                                        ? 'text-green-600 hover:text-green-800'
-                                        : 'text-gray-400 hover:text-black'
-                                        }`}
+                                    className={`w-20 text-xs uppercase tracking-wide text-center transition-colors duration-200 cursor-pointer ${
+                                    p.is_active
+                                        ? 'text-green-600 hover:text-green-900'
+                                        : 'text-gray-400 hover:text-gray-800'
+                                    }`}
                                 >
                                     {p.is_active ? 'Active' : 'Inactive'}
                                 </button>
                             </td>
 
-                            <td
-                                className="py-4 px-6 cursor-pointer text-sm text-gray-500 hover:text-black"
+                            <td className="py-4 px-8 text-center">
+                            <span
                                 onClick={() => setVariantProduct(p)}
+                                className="text-xs uppercase tracking-wide text-gray-400 hover:text-gray-700 transition-colors duration-200 cursor-pointer inline-block"
                             >
                                 Variants
+                            </span>
                             </td>
 
-                            <td
-                                className="py-4 px-6 cursor-pointer text-sm text-gray-500 hover:text-black"
+                            <td className="py-4 px-8 text-center">
+                            <span
                                 onClick={() => setImageProduct(p)}
+                                className="text-xs uppercase tracking-wide text-gray-400 hover:text-gray-700 transition-colors duration-200 cursor-pointer inline-block"
                             >
                                 Images
+                            </span>
                             </td>
-                            <td className="py-4 px-6 text-right">
+
+                            <td className="py-4 px-8 text-center">
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation()
                                         handleDeleteProduct(p.id)
                                     }}
-                                    className="text-gray-400 hover:text-red-600 transition text-lg"
+                                    className="text-gray-400 hover:text-red-600 transition-colors duration-200 text-sm cursor-pointer"
                                 >
                                     ✕
                                 </button>
@@ -452,7 +460,7 @@ export default function Products() {
             )}
 
             <div className="mt-24" style={{ fontFamily: 'SUSE Mono' }}>
-                <p className="text-ss uppercase tracking-widest text-black mb-8">
+                <p className="text-ss uppercase tracking-widest text-black mb-10">
                     Create New Product
                 </p>
 

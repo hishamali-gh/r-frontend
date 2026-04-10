@@ -41,57 +41,56 @@ export default function Users() {
 
     return (
         <div>
-            <h1
-                className="text-6xl mb-10"
-                style={{ fontFamily: "Playfair Display" }}
-            >
+            <h1 className="text-5xl mb-16" style={{ fontFamily: "Playfair Display" }}>
                 Users
             </h1>
 
             <table
-                className="w-full text-gray-800 border-collapse"
+                className="w-full table-fixed text-gray-800 border-collapse text-sm mt-4"
                 style={{ fontFamily: "SUSE Mono" }}
             >
                 <thead>
-                    <tr className="border-b border-gray-200 text-gray-600 text-sm uppercase">
-                        <th className="py-3 px-3 text-left w-[25%]">Name</th>
-                        <th className="py-3 px-6 text-left w-[30%]">Email</th>
-                        <th className="py-3 px-6 text-left w-[25%]">Status</th>
-                        <th className="py-3 px-5 text-left w-[20%]">Action</th>
+                    <tr className="border-b border-gray-200 text-sm uppercase text-center">
+                        <th className="py-3 px-6 w-[30%]">Name</th>
+                        <th className="py-3 px-6 w-[30%]">Email</th>
+                        <th className="py-3 px-6 w-[20%]">Status</th>
+                        <th className="py-3 px-6 w-[20%]">Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {users.map(u => (
                         <tr
                             key={u.id}
                             className="border-b border-gray-100 hover:bg-gray-50 transition"
                         >
-                            <td className="py-3 px-3 text-left">{u.name}</td>
-                            <td className="py-3 px-6 text-left text-gray-600">{u.email}</td>
+                            <td className="py-5 px-6 text-center text-gray-800 truncate">
+                                {u.name}
+                            </td>
 
-                            <td className="py-3 px-6 text-left">
+                            <td className="py-5 px-6 text-center text-gray-500 truncate">
+                                {u.email}
+                            </td>
+
+                            <td className="py-5 px-6 text-center">
                                 <span
-                                    className={`${
+                                    className={`text-xs uppercase tracking-wide ${
                                         !u.is_active
-                                            ? 'text-red-500'
+                                            ? 'text-red-400'
                                             : 'text-green-600'
-                                    } font-medium`}
+                                    }`}
                                 >
                                     {!u.is_active ? 'Blocked' : 'Active'}
                                 </span>
                             </td>
 
-                            <td className="py-3 px-3 text-left">
-                                <button
+                            <td className="py-5 px-6 text-center">
+                                <span
                                     onClick={() => handleToggleBlock(u.id, u.is_active)}
-                                    className={`text-sm px-2 py-1 cursor-pointer transition ${
-                                        !u.is_active
-                                            ? 'text-green-700 hover:text-green-500'
-                                            : 'text-red-700 hover:text-red-500'
-                                    }`}
+                                    className="text-xs uppercase tracking-wide cursor-pointer text-gray-500 hover:text-black transition-colors"
                                 >
                                     {!u.is_active ? 'Unblock' : 'Block'}
-                                </button>
+                                </span>
                             </td>
                         </tr>
                     ))}

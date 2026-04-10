@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SUSE+Mono:wght@300;400;500&display=swap');
 @import "tailwindcss";
+
+.mono-font {
+  font-family: 'SUSE Mono', monospace;
+}
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -17,3 +21,6 @@ body {
   margin: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+}

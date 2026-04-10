@@ -1,133 +1,82 @@
-import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import '../index.css';
-import SearchBar from './SearchBar.jsx';
-import { RxHamburgerMenu } from 'react-icons/rx';
+import { useContext } from 'react';
 import { AuthContext } from './AuthContext.jsx';
 
-export default function NavBar() {
-    const [menuOpen, setMenuOpen] = useState(false);
+export default function NavBar({ toggle, menuOpen }) {
     const { user, loading } = useContext(AuthContext);
 
-    useEffect(() => {
-        document.body.style.overflow = menuOpen ? 'hidden' : 'auto';
-    }, [menuOpen]);
-
-    if (loading) {
-        return null;
-    }
+    if (loading) return null;
 
     return (
-        <>
-            <nav className='fixed top-0 left-0 w-full px-8 py-3 flex justify-between items-center bg-white/70 backdrop-blur-md border-b border-gray-300/40 z-30'>
+        <nav className='fixed top-0 left-0 w-full px-4 sm:px-6 md:px-8 py-3 flex justify-between items-center bg-white/70 backdrop-blur-md border-b border-gray-300/40 z-50'>
+
+            <div className='flex items-center space-x-4 sm:space-x-6 md:space-x-8'>
 
                 <button
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className='text-m tracking-wide hover:text-gray-500 transition cursor-pointer'
+                    onClick={toggle}
+                    className="relative w-4 h-4 flex items-center justify-center group cursor-pointer transition"
                 >
-                    <RxHamburgerMenu />
+                    <span
+                        className={`absolute w-4 bg-gray-600 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
+                        ${menuOpen
+                                ? "h-[1px] rotate-45"
+                                : "h-[0.8px] -translate-y-[5px]"
+                            }
+                        `}
+                    />
+
+                    <span
+                        className={`absolute w-4 bg-gray-600 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
+                        ${menuOpen
+                                ? "h-[1px] opacity-0"
+                                : "h-[0.8px] opacity-100"
+                            }
+                        `}
+                    />
+
+                    <span
+                        className={`absolute w-4 bg-gray-600 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
+                        ${menuOpen
+                                ? "h-[1px] -rotate-45"
+                                : "h-[0.8px] translate-y-[5px]"
+                            }
+                        `}
+                    />
                 </button>
 
-                <Link 
-                to="/" 
-                style={{ fontFamily: "'Bodoni Moda', serif" }}
+                <Link
+                    to="/"
+                    style={{ fontFamily: "'Bodoni Moda', serif" }}
+                    className="text-sm tracking-wide"
                 >
-                Heart, Gold
+                    Heart, Gold
                 </Link>
 
-                <div
-                    className='flex items-center space-x-8'
-                    style={{ fontFamily: 'SUSE Mono' }}
-                >
-                    <ul className='flex space-x-6 items-center'>
-                        <li>
-                            {user ? (
-                                <Link
-                                    className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
-                                    to='/profile'
-                                >
-                                    PROFILE
-                                </Link>
-                            ) : (
-                                <Link
-                                    className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
-                                    to='/login'
-                                >
-                                    LOGIN
-                                </Link>
-                            )}
-                        </li>
-
-                        <li>
-                            <Link
-                                className='text-sm tracking-wide hover:text-gray-500 transition cursor-pointer'
-                                to='/cart'
-                            >
-                                CART
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <div
-                className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
-                    menuOpen
-                        ? 'opacity-100 pointer-events-auto'
-                        : 'opacity-0 pointer-events-none'
-                }`}
-                onClick={() => setMenuOpen(false)}
-            ></div>
-
-            <div
-                className={`fixed top-0 left-0 h-full w-64 bg-white/50 backdrop-blur-md border-r border-white/40 transform transition-transform duration-300 ease-in-out z-50 ${
-                    menuOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
-                style={{ fontFamily: 'SUSE Mono' }}
-            >
-                <div className='p-6 flex flex-col space-y-6'>
-                    <button
-                        onClick={() => setMenuOpen(false)}
-                        className='self-end text-gray-600 hover:text-gray-500 hover:cursor-pointer text-xl transition'
-                    >
-                        ✕
-                    </button>
-
-                    <ul className='space-y-4 text-gray-800'>
-                        <li>
-                            <Link
-                                className='hover:text-gray-500 transition cursor-pointer'
-                                to='/men'
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                MEN
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link
-                                className='hover:text-gray-500 transition cursor-pointer'
-                                to='/women'
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                WOMEN
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link
-                                className='hover:text-gray-500 transition cursor-pointer'
-                                to='/kids'
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                KIDS
-                            </Link>
-                        </li>
-
-                        <SearchBar />
-                    </ul>
-                </div>
             </div>
-        </>
+
+            <div className='flex items-center space-x-8'>
+                <ul className='flex space-x-6 items-center mono-font'>
+                    <li>
+                        {user ? (
+                            <Link className="text-xs sm:text-sm tracking-wide hover:text-gray-500 transition-colors duration-200" to='/profile'>
+                                PROFILE
+                            </Link>
+                        ) : (
+                            <Link className="text-xs sm:text-sm tracking-wide hover:text-gray-500 transition-colors duration-200" to='/login'>
+                                LOGIN
+                            </Link>
+                        )}
+                    </li>
+
+                    <li>
+                        <Link className="text-xs sm:text-sm tracking-wide hover:text-gray-500 transition-colors duration-200" to='/cart'>
+                            CART
+                        </Link>
+                    </li>
+                </ul>
+            </div>
+
+        </nav>
     );
 }
