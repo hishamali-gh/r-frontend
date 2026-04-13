@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar.jsx';
 
-export default function Sidebar() {
+export default function SideBar() {
     return (
         <div className="h-full pt-10 px-6 pb-6 flex flex-col space-y-6 bg-white">
             <ul className='space-y-4 text-gray-800 mono-font'>
