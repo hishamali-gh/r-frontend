@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "../index.css";
 import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
-import Sidebar from "../Components/Sidebar";
+import SideBar from "../Components/SideBar";
 import { useEffect, useState } from "react";
 import API from '../api.jsx';
 
@@ -36,7 +36,7 @@ export default function Home() {
       <NavBar toggle={() => setMenuOpen(!menuOpen)} menuOpen={menuOpen} />
 
       <div className={`fixed top-12 left-0 h-[calc(100vh-4rem)] w-64 bg-white/50 backdrop-blur-md border-r border-gray-300/40 z-40 transform transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <Sidebar />
+        <SideBar />
       </div>
 
       <div className={`transition-all pt-1 duration-300 flex-grow ${menuOpen ? "ml-64" : "ml-0"}`}>
